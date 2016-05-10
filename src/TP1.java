@@ -8,12 +8,8 @@ public class TP1 {
 
     public static void main(String[] args) throws JauntException {
         //AQUI PRINCIPAL
-        JAgente ag = new JAgente("http://vistaatenasbnb.com");
+        JAgente ag = new JAgente("http://vistaatenasbnb.com/accommodation.html");
         ag.recorrerWEB();
-        TP1_Controles cl = new TP1_Controles();
-        cl.setVisible(true);
-
-
 
     }
 
