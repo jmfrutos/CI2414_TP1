@@ -1,6 +1,5 @@
 import analysis.Analyzer;
 import analysis.StandardAnalyzer;
-import com.jaunt.JauntException;
 import document.Document;
 import index.IndexWriter;
 import index.IndexWriterConfig;
@@ -13,7 +12,7 @@ import store.RAMDirectory;
 
 public class TP1 {
 
-    public static void main(String[] args) throws JauntException {
+    public static void main(String[] args){
         //AQUI PRINCIPAL
         //JAgente ag = new JAgente("http://vistaatenasbnb.com/accommodation.html");
         //ag.recorrerWEB();

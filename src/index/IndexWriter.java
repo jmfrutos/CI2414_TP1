@@ -8,11 +8,19 @@ import index.IndexWriterConfig;
  * Created by CAndres on 5/11/2016.
  */
 public class IndexWriter {
-    public IndexWriter(Directory directory, IndexWriterConfig config) {
 
+    Directory directory;
+    IndexWriterConfig config;
+
+    public IndexWriter(Directory directory, IndexWriterConfig config) {
+        this.directory = directory;
+        this.config = config;
     }
 
-    public void addDocument(Document doc){}
+    public void addDocument(Document doc){
+        config.getAnalyzer().analyze(doc);
+
+    }
 
     public void close(){}
 }
