@@ -12,26 +12,26 @@ public class Document {
     public long docID;
 
     //Obtener de los documentos html <title>Page Title</title> o el primer <h1> o <h2>
-    public String titulo;
+    public String title;
 
     // String of length Integer.MAX_VALUE (always 2147483647 (231 - 1)
-    public String cuerpo;
+    public String body;
 
     //Link de la pagina web
-    public String enlace;
+    public String link;
 
     public Document() {
         this.docID=0;
-        this.titulo="";
-        this.cuerpo="";
-        this.enlace="";
+        this.title ="";
+        this.body ="";
+        this.link ="";
     }
 
-    public Document(long docID, String titulo, String cuerpo, String enlace) {
+    public Document(long docID, String title, String body, String link) {
         this.docID = docID;
-        this.titulo = titulo;
-        this.cuerpo = cuerpo;
-        this.enlace = enlace;
+        this.title = title;
+        this.body = body;
+        this.link = link;
     }
 
     public long getDocID() {
@@ -42,37 +42,37 @@ public class Document {
         this.docID = docID;
     }
 
-    public String getTitulo() {
-        return titulo;
+    public String getTitle() {
+        return title;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getCuerpo() {
-        return cuerpo;
+    public String getBody() {
+        return body;
     }
 
-    public void setCuerpo(String cuerpo) {
-        this.cuerpo = cuerpo;
+    public void setBody(String body) {
+        this.body = body;
     }
 
-    public String getEnlace() {
-        return enlace;
+    public String getLink() {
+        return link;
     }
 
-    public void setEnlace(String enlace) {
-        this.enlace = enlace;
+    public void setLink(String link) {
+        this.link = link;
     }
 
     @Override
     public String toString() {
         return "document.Document{" +
                 "docID=" + docID +
-                ", titulo='" + titulo + '\'' +
-                ", cuerpo='" + cuerpo + '\'' +
-                ", enlace='" + enlace + '\'' +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", link='" + link + '\'' +
                 '}';
     }
 }

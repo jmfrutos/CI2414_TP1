@@ -26,9 +26,10 @@ public class TP1 {
         //Directory directory = FSDirectory.open("/tmp/testindex");
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter iwriter = new IndexWriter(directory, config);
-        Document doc = new Document();
-        String text = "This is the text to be indexed.";
-        //doc.add(new Field("fieldname", text, TextField.TYPE_STORED));
+
+        String text = "<img src=\"perro.jpg\" /><p>Este es un texto de ejemplo, perro y gato.</p>";
+        Document doc = new Document(1,"<title>Los Animales</title>",text,"http://animales.com");
+
         iwriter.addDocument(doc);
         iwriter.close();
 
