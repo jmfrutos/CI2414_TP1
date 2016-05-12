@@ -194,8 +194,8 @@ public class FileSwitchDirectory extends Directory {
     }
 
     @Override
-    public IndexInput openInput(String name, IOContext context) throws IOException {
-        return getDirectory(name).openInput(name, context);
+    public NIOFSDirectory.NIOFSIndexInput openInput(String name, IOContext context) throws IOException {
+        return (NIOFSDirectory.NIOFSIndexInput) (NIOFSDirectory.NIOFSIndexInput) getDirectory(name).openInput(name, context);
     }
 }
 

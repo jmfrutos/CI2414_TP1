@@ -280,6 +280,7 @@ public abstract class DataInput implements Cloneable {
      * @return An immutable map containing the written contents.
      */
     public Map<String,String> readMapOfStrings() throws IOException {
+        /*
         int count = readVInt();
         if (count == 0) {
             return Collections.emptyMap();
@@ -294,6 +295,8 @@ public abstract class DataInput implements Cloneable {
             }
             return Collections.unmodifiableMap(map);
         }
+        */
+        return null;
     }
 
     /** Reads a Set&lt;String&gt; previously written
@@ -317,6 +320,7 @@ public abstract class DataInput implements Cloneable {
      * @return An immutable set containing the written contents.
      */
     public Set<String> readSetOfStrings() throws IOException {
+        /*
         int count = readVInt();
         if (count == 0) {
             return Collections.emptySet();
@@ -329,6 +333,8 @@ public abstract class DataInput implements Cloneable {
             }
             return Collections.unmodifiableSet(set);
         }
+        */
+        return null;
     }
 
     /**

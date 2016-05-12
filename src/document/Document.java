@@ -20,11 +20,15 @@ public class Document {
     //Link de la pagina web
     public String link;
 
+    //Fecha o referencia de cuando se modifico el archivo
+    public long modified;
+
     public Document() {
         this.docID=0;
         this.title ="";
         this.body ="";
         this.link ="";
+        this.modified=0;
     }
 
     public Document(long docID, String title, String body, String link) {
@@ -32,6 +36,7 @@ public class Document {
         this.title = title;
         this.body = body;
         this.link = link;
+        this.modified=0;
     }
 
     public long getDocID() {
@@ -64,6 +69,14 @@ public class Document {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public long getModified() {
+        return modified;
+    }
+
+    public void setModified(long modified) {
+        this.modified = modified;
     }
 
     @Override

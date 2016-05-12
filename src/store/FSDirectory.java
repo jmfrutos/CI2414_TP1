@@ -40,7 +40,7 @@ package store;
         import java.util.concurrent.atomic.AtomicInteger;
         import java.util.concurrent.atomic.AtomicLong;
 
-        import index.IndexFileNames;
+        //import index.IndexFileNames;
         import util.Constants;
         import util.IOUtils;
 
@@ -72,7 +72,7 @@ package store;
  *       {@code RAFDirectory} instead. See {@link NIOFSDirectory} java doc
  *       for details.
  *
- *  <li>{@link MMapDirectory} uses memory-mapped IO when
+ *  <li>{link MMapDirectory} uses memory-mapped IO when
  *       reading. This is a good choice if you have plenty
  *       of virtual memory relative to your index size, eg
  *       if you are running on a 64 bit JRE, or you are
@@ -169,9 +169,9 @@ public abstract class FSDirectory extends BaseDirectory {
      * If you want to use symlinks and change them dynamically, close all
      * {@code IndexWriters} and create a new {@code FSDirecory} instance.
      *
-     *  <p>Currently this returns {@link MMapDirectory} for Linux, MacOSX, Solaris,
-     *  and Windows 64-bit JREs, {@link NIOFSDirectory} for other
-     *  non-Windows JREs, and {@link SimpleFSDirectory} for other
+     *  <p>Currently this returns {link MMapDirectory} for Linux, MacOSX, Solaris,
+     *  and Windows 64-bit JREs, {link NIOFSDirectory} for other
+     *  non-Windows JREs, and {link SimpleFSDirectory} for other
      *  JREs on Windows. It is highly recommended that you consult the
      *  implementation's documentation for your platform before
      *  using this method.
@@ -182,7 +182,7 @@ public abstract class FSDirectory extends BaseDirectory {
      * possible; if the precise implementation is important to
      * your application, please instantiate it directly,
      * instead. For optimal performance you should consider using
-     * {@link MMapDirectory} on 64 bit JVMs.
+     * {link MMapDirectory} on 64 bit JVMs.
      *
      * <p>See <a href="#subclasses">above</a> */
     public static FSDirectory open(Path path) throws IOException {
@@ -192,7 +192,7 @@ public abstract class FSDirectory extends BaseDirectory {
     /** Just like {@link #open(Path)}, but allows you to
      *  also specify a custom {@link LockFactory}. */
     public static FSDirectory open(Path path, LockFactory lockFactory) throws IOException {
-        /*
+
         if (Constants.JRE_IS_64BIT && MMapDirectory.UNMAP_SUPPORTED) {
             return new MMapDirectory(path, lockFactory);
         } else if (Constants.WINDOWS) {
@@ -200,9 +200,9 @@ public abstract class FSDirectory extends BaseDirectory {
         } else {
             return new NIOFSDirectory(path, lockFactory);
         }
-        */
-        System.out.println("Este metodo se quito:  FSDirectory open(Path path, LockFactory lockFactory)");
-        return null;
+
+        //System.out.println("Este metodo se quito:  FSDirectory open(Path path, LockFactory lockFactory)");
+        //return null;
     }
 
     /** Lists all files (including subdirectories) in the directory.

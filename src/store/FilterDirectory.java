@@ -90,9 +90,9 @@ public abstract class FilterDirectory extends Directory {
     }
 
     @Override
-    public IndexInput openInput(String name, IOContext context)
+    public NIOFSDirectory.NIOFSIndexInput openInput(String name, IOContext context)
             throws IOException {
-        return in.openInput(name, context);
+        return (NIOFSDirectory.NIOFSIndexInput) (NIOFSDirectory.NIOFSIndexInput) in.openInput(name, context);
     }
 
     @Override

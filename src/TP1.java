@@ -28,6 +28,7 @@ import store.RAMDirectory;
 
 public class TP1 {
 
+    /** Index all text files under a directory. */
     public static void main(String[] args){
         //AQUI PRINCIPAL
         //JAgente ag = new JAgente("http://vistaatenasbnb.com/accommodation.html");
@@ -68,11 +69,13 @@ public class TP1 {
 
         String usage = "java org.apache.lucene.demo.IndexFiles"
                 + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
-                + "This indexes the documents in DOCS_PATH, creating a Lucene index"
-                + "in INDEX_PATH that can be searched with SearchFiles";
+                + "Indexa los documentos en DOCS_PATH, creando un Indice"
+                + "en INDEX_PATH en el cual luego se puede buscar utilizando SearchFiles";
         String indexPath = "index";
         String docsPath = null;
         boolean create = true;
+
+
         for(int i=0;i<args.length;i++) {
             if ("-index".equals(args[i])) {
                 indexPath = args[i+1];
@@ -84,6 +87,13 @@ public class TP1 {
                 create = false;
             }
         }
+
+        //TEMPORAL PARA DESARROLLAR
+
+        indexPath = "C:\\\\indice";
+        docsPath = "C:\\\\original\\prueba1.html";
+
+        //FIN DE TEMPORAL
 
         if (docsPath == null) {
             System.err.println("Usage: " + usage);
@@ -107,10 +117,10 @@ public class TP1 {
             if (create) {
                 // Create a new index in the directory, removing any
                 // previously indexed documents:
-                iwc.setOpenMode(OpenMode.CREATE);
+                //iwc.setOpenMode(OpenMode.CREATE);
             } else {
                 // Add new documents to an existing index:
-                iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
+                //iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
             }
 
             // Optional: for better indexing performance, if you
@@ -185,8 +195,10 @@ public class TP1 {
             // field that is indexed (i.e. searchable), but don't tokenize
             // the field into separate words and don't index term frequency
             // or positional information:
-            Field pathField = new StringField("path", file.toString(), Field.Store.YES);
-            doc.add(pathField);
+
+            //Field pathField = new StringField("path", file.toString(), Field.Store.YES);
+            //doc.add(pathField);
+            doc.setLink(file.toString());
 
             // Add the last modified date of the file a field named "modified".
             // Use a LongPoint that is indexed (i.e. efficiently filterable with
@@ -195,14 +207,20 @@ public class TP1 {
             // year/month/day/hour/minutes/seconds, down the resolution you require.
             // For example the long value 2011021714 would mean
             // February 17, 2011, 2-3 PM.
-            doc.add(new LongPoint("modified", lastModified));
+            //doc.add(new LongPoint("modified", lastModified));
+            doc.setModified(lastModified);
 
             // Add the contents of the file to a field named "contents".  Specify a Reader,
             // so that the text of the file is tokenized and indexed, but not stored.
             // Note that FileReader expects the file to be in UTF-8 encoding.
             // If that's not the case searching for special characters will fail.
-            doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
+            //doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
 
+            doc.setBody("");
+
+            //lo agrega al diccionario
+            writer.addDocument(doc);
+/*
             if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
                 // New index, so we just add the document (no old document can be there):
                 System.out.println("adding " + file);
@@ -214,6 +232,7 @@ public class TP1 {
                 System.out.println("updating " + file);
                 writer.updateDocument(new Term("path", file.toString()), doc);
             }
+            */
         }
 
 

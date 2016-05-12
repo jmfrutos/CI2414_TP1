@@ -20,6 +20,7 @@ public class IndexWriter {
     public void addDocument(Document doc){
         config.getAnalyzer().analyze(doc);
 
+        System.out.println("Aqui se agrega al Diccionario documento: " + doc.getLink());
     }
 
     public void close(){}
