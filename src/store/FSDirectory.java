@@ -253,8 +253,8 @@ public abstract class FSDirectory extends BaseDirectory {
         // If this file was pending delete, we are now bringing it back to life:
         pendingDeletes.remove(name);
         maybeDeletePendingFiles();
-        //return new FSIndexOutput(name);
-        return null;
+        return new FSIndexOutput(name);
+        //return null;
     }
 
     @Override

@@ -90,8 +90,8 @@ public class TP1 {
 
         //TEMPORAL PARA DESARROLLAR
 
-        indexPath = "C:\\\\indice";
-        docsPath = "C:\\\\original\\prueba1.html";
+        indexPath = "C:\\indice";
+        docsPath = "C:\\original";
 
         //FIN DE TEMPORAL
 
