@@ -40,7 +40,7 @@ package store;
         import java.util.concurrent.atomic.AtomicInteger;
         import java.util.concurrent.atomic.AtomicLong;
 
-        //import index.IndexFileNames;
+        import index.IndexFileNames;
         import util.Constants;
         import util.IOUtils;
 
@@ -254,7 +254,6 @@ public abstract class FSDirectory extends BaseDirectory {
         pendingDeletes.remove(name);
         maybeDeletePendingFiles();
         return new FSIndexOutput(name);
-        //return null;
     }
 
     @Override
@@ -262,14 +261,13 @@ public abstract class FSDirectory extends BaseDirectory {
         ensureOpen();
         maybeDeletePendingFiles();
         while (true) {
-            //String name = IndexFileNames.segmentFileName(prefix, suffix + "_" + Long.toString(nextTempFileCounter.getAndIncrement(), Character.MAX_RADIX), "tmp");
-            String name = "";
+            String name = IndexFileNames.segmentFileName(prefix, suffix + "_" + Long.toString(nextTempFileCounter.getAndIncrement(), Character.MAX_RADIX), "tmp");
+            //String name = "";
             if (pendingDeletes.contains(name)) {
                 continue;
             }
-            //return new FSIndexOutput(name,
-            //StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
-            return null;
+            return new FSIndexOutput(name,
+            StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
         }
     }
 
