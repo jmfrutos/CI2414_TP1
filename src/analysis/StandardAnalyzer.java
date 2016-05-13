@@ -1,6 +1,8 @@
 package analysis;
 
 import com.jaunt.*;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -13,23 +15,23 @@ import document.Document;
  */
 public class StandardAnalyzer extends Analyzer  {
     private UserAgent agente;
-    private StringTokenizer tokenizer;
+
 
     public StandardAnalyzer() {
     }
 
     public void analyze(Document doc){
 
-        tokenizer = new StringTokenizer(doc.getBody());
+        agente = new UserAgent();
         try {
-            while(tokenizer.hasMoreTokens()){
-                String str=tokenizer.nextToken();
-                System.out.println(str);
-            }
+            agente.open(new File(doc.getFileName()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ResponseException e) {
+            e.printStackTrace();
         }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+
+        doc.setBody_normalized(agente.doc.innerText().toLowerCase());
 
     }
 

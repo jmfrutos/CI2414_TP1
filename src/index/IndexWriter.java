@@ -9,6 +9,7 @@ import util.IOUtils;
 
 import javax.print.DocFlavor;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 /**
  * Created by CAndres on 5/11/2016.
@@ -21,6 +22,8 @@ public class IndexWriter {
     String fileName;
     IndexOutput out;
     boolean success;
+
+    private StringTokenizer tokenizer;
 
     /** {@link IOContext} for all writes; you should pass this
      *  to {@link Directory#createOutput(String,IOContext)}. */
@@ -49,9 +52,25 @@ public class IndexWriter {
         config.getAnalyzer().analyze(doc);
         try {
 
+
             try {
-                out.writeString("docID: " + doc.docID); // En realidad hay que hacer el diccionario aqui con los terminos.
-                                                        // ver linea config.getAnalyzer().analyze(doc);
+
+                // Aqui hay que hacer el diccionario con los terminos (no tokens).
+                out.writeString("docID: " + doc.docID + "tokens: ");
+
+                tokenizer = new StringTokenizer(doc.getBody_normalized());
+                try {
+                    while(tokenizer.hasMoreTokens()){
+                        String str=tokenizer.nextToken();
+                        out.writeString(str);
+                    }
+                }
+                catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+
+
             } finally {
                 if (!success) {
                     IOUtils.closeWhileHandlingException(out);

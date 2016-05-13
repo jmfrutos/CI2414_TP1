@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CI2414_TP1:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CI2414_TP1_jar</output-path>
+    <root id="archive" name="CI2414_TP1.jar">
+      <element id="module-output" name="CI2414_TP1" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jaunt1.1.6.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

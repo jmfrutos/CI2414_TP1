@@ -17,11 +17,17 @@ public class Document {
     // String of length Integer.MAX_VALUE (always 2147483647 (231 - 1)
     public String body;
 
+
+    public String body_normalized;
+
     //Link de la pagina web
     public String link;
 
     //Fecha o referencia de cuando se modifico el archivo
     public long modified;
+
+    //Inluye el directorio absoluto ej: C:\original\prueba1.html
+    public String fileName;
 
     public Document() {
         this.docID=0;
@@ -63,6 +69,14 @@ public class Document {
         this.body = body;
     }
 
+    public String getBody_normalized() {
+        return body_normalized;
+    }
+
+    public void setBody_normalized(String body_normalized) {
+        this.body_normalized = body_normalized;
+    }
+
     public String getLink() {
         return link;
     }
@@ -77,6 +91,14 @@ public class Document {
 
     public void setModified(long modified) {
         this.modified = modified;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     @Override

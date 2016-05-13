@@ -73,8 +73,11 @@ public class TP1 {
                 + "en INDEX_PATH en el cual luego se puede buscar utilizando SearchFiles";
         String indexPath = "index";
         String docsPath = null;
-        boolean create = true;
+        boolean create = true; //Si crear el archivo del Indice o actualizar
 
+        //El programa se puede ejecutar desde la consola con java -jar
+        //Ej: java -jar nombreJAR [-index INDEX_PATH] [-docs DOCS_PATH] [-update]
+        //A continuacion se leen los valores de los parametros
 
         for(int i=0;i<args.length;i++) {
             if ("-index".equals(args[i])) {
@@ -90,8 +93,8 @@ public class TP1 {
 
         //TEMPORAL PARA DESARROLLAR
 
-        indexPath = "C:\\indice";
-        docsPath = "C:\\original";
+        indexPath = "C:\\indice";  //Aqui se pondra el(los) archivo(s) del Indice
+        docsPath = "C:\\original"; //Aqui estan todos los archivos originales que se desean indexar (Generados por Agente)
 
         //FIN DE TEMPORAL
 
@@ -216,7 +219,9 @@ public class TP1 {
             // If that's not the case searching for special characters will fail.
             //doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
 
-            doc.setBody("");
+            doc.setFileName(file.toString());
+            doc.setBody(""); //Por el momento no interesa ya que luego JAUNT se encarga de abrir el doc
+                            //aunque puede interesar para otra libreria
 
             //lo agrega al diccionario
             writer.addDocument(doc);
