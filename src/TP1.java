@@ -18,6 +18,7 @@ import analysis.StandardAnalyzer;
 import document.Document;
 import index.IndexWriter;
 import index.IndexWriterConfig;
+import index.SPIMI;
 import store.Directory;
 import store.FSDirectory;
 import store.RAMDirectory;
@@ -27,6 +28,7 @@ import store.RAMDirectory;
  */
 
 public class TP1 {
+
 
     /** Index all text files under a directory. */
     public static void main(String[] args){
@@ -133,7 +135,7 @@ public class TP1 {
             //
             // iwc.setRAMBufferSizeMB(256.0);
 
-            IndexWriter writer = new IndexWriter(dir, iwc);
+            IndexWriter writer = new SPIMI(dir, iwc);
             indexDocs(writer, docDir);
 
             // NOTE: if you want to maximize search performance,
@@ -143,6 +145,7 @@ public class TP1 {
             // you're done adding documents to it):
             //
             // writer.forceMerge(1);
+
 
             writer.close();
 
@@ -181,6 +184,7 @@ public class TP1 {
                         // don't index files that can't be read.
                     }
                     return FileVisitResult.CONTINUE;
+
                 }
             });
         } else {

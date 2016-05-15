@@ -280,14 +280,14 @@ public abstract class DataInput implements Cloneable {
      * @return An immutable map containing the written contents.
      */
     public Map<String,String> readMapOfStrings() throws IOException {
-        /*
+
         int count = readVInt();
         if (count == 0) {
             return Collections.emptyMap();
         } else if (count == 1) {
             return Collections.singletonMap(readString(), readString());
         } else {
-            Map<String,String> map = (Map<String, String>) (count > 10 ? new HashMap<>() : new TreeMap<>());
+            Map<String,String> map = (Map) (count > 10 ? new HashMap<>() : new TreeMap<>());
             for (int i = 0; i < count; i++) {
                 final String key = readString();
                 final String val = readString();
@@ -295,8 +295,8 @@ public abstract class DataInput implements Cloneable {
             }
             return Collections.unmodifiableMap(map);
         }
-        */
-        return null;
+
+        //return null;
     }
 
     /** Reads a Set&lt;String&gt; previously written
@@ -320,21 +320,21 @@ public abstract class DataInput implements Cloneable {
      * @return An immutable set containing the written contents.
      */
     public Set<String> readSetOfStrings() throws IOException {
-        /*
+
         int count = readVInt();
         if (count == 0) {
             return Collections.emptySet();
         } else if (count == 1) {
             return Collections.singleton(readString());
         } else {
-            Set<String> set = (Set<String>) (count > 10 ? new HashSet<>() : new TreeSet<>());
+            Set<String> set = (Set) (count > 10 ? new HashSet<>() : new TreeSet<>());
             for (int i = 0; i < count; i++) {
                 set.add(readString());
             }
             return Collections.unmodifiableSet(set);
         }
-        */
-        return null;
+
+       // return null;
     }
 
     /**

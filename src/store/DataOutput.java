@@ -255,7 +255,7 @@ public abstract class DataOutput {
      */
     public void writeString(String s) throws IOException {
         final BytesRef utf8Result = new BytesRef(s);
-        writeVInt(utf8Result.length);
+        //writeVInt(utf8Result.length); //candres
         writeBytes(utf8Result.bytes, utf8Result.offset, utf8Result.length);
     }
 
