@@ -15,6 +15,7 @@ import java.util.Date;
 
 import analysis.Analyzer;
 import analysis.StandardAnalyzer;
+import com.jaunt.JauntException;
 import document.Document;
 import index.IndexWriter;
 import index.IndexWriterConfig;
@@ -31,8 +32,14 @@ public class TP1 {
     /** Index all text files under a directory. */
     public static void main(String[] args){
         //AQUI PRINCIPAL
-        //JAgente ag = new JAgente("http://vistaatenasbnb.com/accommodation.html");
-        //ag.recorrerWEB();
+        try {
+            JAgente ag = new JAgente("http://vistaatenasbnb.com");
+            ag.recorrerWEB();
+        }
+        catch (JauntException e) {
+
+        }
+
 /**
         Analyzer analyzer = new StandardAnalyzer();
 
@@ -67,7 +74,7 @@ public class TP1 {
         directory.close();
         **/
 
-        String usage = "java org.apache.lucene.demo.IndexFiles"
+        /*String usage = "java org.apache.lucene.demo.IndexFiles"
                 + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
                 + "Indexa los documentos en DOCS_PATH, creando un Indice"
                 + "en INDEX_PATH en el cual luego se puede buscar utilizando SearchFiles";
@@ -152,7 +159,7 @@ public class TP1 {
         } catch (IOException e) {
             System.out.println(" caught a " + e.getClass() +
                     "\n with message: " + e.getMessage());
-        }
+        }*/
     }
 
     /**
