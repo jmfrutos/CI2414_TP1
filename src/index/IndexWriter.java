@@ -8,8 +8,11 @@ import store.IOContext;
 import util.IOUtils;
 
 import javax.print.DocFlavor;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import analysis.Analyzer;
 
 /**
  * Created by CAndres on 5/11/2016.
@@ -24,6 +27,7 @@ public abstract class IndexWriter {
 
     Directory directory;
     IndexWriterConfig config;
+    Analyzer analyzer;
 
     Long numDocs;
 
@@ -38,8 +42,9 @@ public abstract class IndexWriter {
      *  to {@link Directory#createOutput(String,IOContext)}. */
     //public final IOContext context = new IOContext(DEFAULT);
 
-    public IndexWriter(Directory directory, IndexWriterConfig config) {
+    public IndexWriter(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
         this.directory = directory;
+        this.analyzer = analyzer;
         this.config = config;
         this.success = false;
         this.numDocs= new Long(0);
@@ -47,46 +52,70 @@ public abstract class IndexWriter {
 
     public abstract void addDocument(Document doc);
 
-    public void ramToFile(String path) {
-
+    public void ramToFile(String path, AbstractMap<String, ArrayList<Posting>> mapa) {
+        IndexOutput block = null;
         StringBuilder str = new StringBuilder();
         // para cada token
-        Set set = map.keySet();
+        Set set = mapa.keySet();
         Iterator iter = set.iterator();
 
         while(iter.hasNext()) {
             String temp = (String)iter.next();
             str.append(temp + " ");
 
-            for (Posting i : map.get(temp)) {
+            for (Posting i : mapa.get(temp)) {
                 str.append(i.toString() + " ");
-                System.out.println("j"+i.toString());
+
             }
             str.append("\n");
         }
 
+        try {
+            block = directory.createOutput(path, new IOContext(IOContext.Context.DEFAULT));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
-            out.writeString(str.toString());
+            block.writeString(str.toString());
+            IOUtils.close(block);
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
             if (!success) {
-                IOUtils.closeWhileHandlingException(out);
+                IOUtils.closeWhileHandlingException(block);
                 IOUtils.deleteFilesIgnoringExceptions(directory, fileName);
             }
         }
 
     }
 
-    public void close(){
-        System.out.println(directory.toString());
+    public void appendToFile(String path, String term, ArrayList<Posting> postings) {
+
+        StringBuilder str = new StringBuilder();
+        for (Posting i : postings) {
+            str.append(i.toString() + " ");
+        }
+        str.append("\n");
+
+
+        File file = new File(path);
         try {
-            directory.close();
-            IOUtils.close(out);
+            file.createNewFile();
+
+            FileWriter writer = new FileWriter(file, true);
+
+            writer.write(term+" "+str.toString());
+            writer.flush();
+            writer.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
+
+    public abstract void close();
 }

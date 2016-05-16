@@ -224,4 +224,14 @@ public class JAgente {
 
         return stemm.stemm(input);
     }
+
+    public static void main(String[] args){
+        try {
+            JAgente agente = new JAgente("http://semanariouniversidad.ucr.ac.cr");
+            agente.recorrerWEB();
+        }
+        catch (Exception e){
+
+        }
+    }
 }
