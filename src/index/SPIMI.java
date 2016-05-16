@@ -7,10 +7,11 @@ import store.IOContext;
 import util.IOUtils;
 import util.ObjectSizeFetcher;
 
-import java.util.StringTokenizer;
-import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.AbstractMap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by CAndres on 5/15/2016.
@@ -25,7 +26,6 @@ public class SPIMI extends IndexWriter {
      */
 
 
-    private static Integer TotalBlockCounter = 0;
     private int postingCouter;
     private int termCounter;
     private int blockCounter;
@@ -69,7 +69,6 @@ public class SPIMI extends IndexWriter {
             System.out.println(e.getMessage());
         }
 
-        if(doc.getDocID() == 4) { System.out.println("Flush");flushBlock();} //TEMPORAL mientras se habilita revision de memoria
 
         System.out.println("Aqui se agrega al Diccionario documento: " + doc.getLink());
 
@@ -123,5 +122,86 @@ public class SPIMI extends IndexWriter {
     public int getMapRAM(){
         int termsSize = 2*11+8+4+4+4* termCounter;
         return (Integer)(termsSize + postingCouter*64)/8; //Posting usa Long (64 bits)
+    }
+
+    private ArrayList<Posting> mergePostingList(ArrayList<Posting> a, ArrayList<Posting> b) {
+        for (Posting p1:a) {
+            int idx = b.indexOf(p1);
+            if (idx < 0)
+                b.add(p1);
+        }
+        return b;
+    }
+
+    public static AbstractMap<String, ArrayList<Posting>> readFromDisk(String path) {
+        try {
+            TreeMap<String, ArrayList<Posting>> newMap = new TreeMap<String, ArrayList<Posting>>();
+
+            File inputFile = new File(path);
+
+            System.out.println("opening " + inputFile.getAbsolutePath());
+            FileReader fstream = new FileReader(inputFile);
+            BufferedReader in = new BufferedReader(fstream);
+
+            String line = in.readLine();
+
+
+            String term = null;
+            while (line != null) {
+                StringTokenizer st = new StringTokenizer(line);
+                boolean firstToken = true;
+                Posting[] postingList = new Posting[st.countTokens()-1];
+                int i=0;
+                while (st.hasMoreTokens()) {
+                    if (firstToken==true) {
+                        firstToken = false;
+                        term = st.nextToken();
+                    }
+                    else {
+                        postingList[i++] = Posting.fromString(term, st.nextToken());
+                    }
+                }
+
+                newMap.put(term, new ArrayList<Posting>(Arrays.asList((postingList))));
+                line = in.readLine();
+            }
+
+            in.close();
+            return newMap;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //Le falta bastante
+    public void mergeAllBlocks(){
+        ArrayList<Posting> lista = new ArrayList<Posting>();
+        AbstractMap<String, ArrayList<Posting>> map1;
+        AbstractMap<String, ArrayList<Posting>> map2;
+
+        for(int i=0; i<blockCounter-1;i++){
+            map1 = readFromDisk("block-"+i);
+            map2 = readFromDisk("block-"+i+1);
+            for (String term : map1.keySet()) {
+                lista = mergePostingList(map1.get(term),map2.get(term));
+            }
+            System.out.println(lista.toString());
+        }
+    }
+
+
+    @Override
+    public void close() {
+
+        //mergeAllBlocks();
+
+        System.out.println(directory.toString());
+        try {
+            directory.close();
+            IOUtils.close(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

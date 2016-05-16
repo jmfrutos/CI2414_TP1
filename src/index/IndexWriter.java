@@ -90,13 +90,5 @@ public abstract class IndexWriter {
 
     }
 
-    public void close(){
-        System.out.println(directory.toString());
-        try {
-            directory.close();
-            IOUtils.close(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void close();
 }
