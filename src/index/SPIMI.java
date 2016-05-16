@@ -108,7 +108,7 @@ public class SPIMI extends IndexWriter {
 
 
     public void flushBlock() {
-        ramToFile("block-"+String.valueOf(blockCounter) + ".txt");
+        ramToFile("block-"+String.valueOf(blockCounter) + ".txt", map);
         map.clear();
         blockCounter++;
         termCounter = 0;
@@ -125,10 +125,14 @@ public class SPIMI extends IndexWriter {
     }
 
     private ArrayList<Posting> mergePostingList(ArrayList<Posting> a, ArrayList<Posting> b) {
+        if(a == null) return b;
+        else if(b == null) return a;
+
         for (Posting p1:a) {
             int idx = b.indexOf(p1);
-            if (idx < 0)
+            if (idx == -1)
                 b.add(p1);
+
         }
         return b;
     }
@@ -174,27 +178,100 @@ public class SPIMI extends IndexWriter {
         return null;
     }
 
-    //Le falta bastante
-    public void mergeAllBlocks(){
-        ArrayList<Posting> lista = new ArrayList<Posting>();
-        AbstractMap<String, ArrayList<Posting>> map1;
-        AbstractMap<String, ArrayList<Posting>> map2;
 
-        for(int i=0; i<blockCounter-1;i++){
-            map1 = readFromDisk("block-"+i);
-            map2 = readFromDisk("block-"+i+1);
-            for (String term : map1.keySet()) {
-                lista = mergePostingList(map1.get(term),map2.get(term));
+    //termino por termino (se usa getNextTerm()) une la lista de posting en cada block de dicho termino
+    //la lista de posting resultante la agrega a index.txt mediante un append
+    //getNextTerm va devolviendo los terminos en orden alfabetico
+    public void mergeAllBlocks(){
+
+        //Obtener primer term
+        String lastTerm = "a";
+
+        //Obtener siguiente termino
+        String nextTerm = getNextTerm(lastTerm);
+
+        //Para cada term
+        while (! lastTerm.equals(nextTerm)) {
+
+            ArrayList<Posting> lista = new ArrayList<Posting>(); //lista vacia para cada termino
+
+            //Hacer merge de postings de cada bloque
+            for (int i = 0; i < blockCounter-1; i++) {
+                AbstractMap<String, ArrayList<Posting>> map1 = readFromDisk("C:\\indice\\block-"+i+".txt");
+                int j = i + 1;
+                AbstractMap<String, ArrayList<Posting>> map2 = readFromDisk("C:\\indice\\block-"+j+".txt");
+
+                lista = mergePostingList(map1.get(nextTerm), map2.get(nextTerm));
             }
-            System.out.println(lista.toString());
+
+            //Agregar la lista de postings en indice
+            appendToFile("C:\\indice\\indice.txt", nextTerm, lista);
+
+            lastTerm = nextTerm;
+            nextTerm = getNextTerm(nextTerm);
         }
+
+    }
+
+    private String getNextTerm(String term){
+
+        String nextTerm = "";
+
+        for(int i=0; i<blockCounter;i++){
+            AbstractMap<String, ArrayList<Posting>> map1 = readFromDisk("C:\\indice\\block-"+i+".txt");
+            Set set = map1.keySet();
+            Iterator iter = set.iterator();
+            //System.out.print("block: "+i + ": ");
+            while(iter.hasNext()) {
+
+                String puntero = (String)iter.next();
+                //System.out.print(puntero+"-"+nextTerm);
+                int j = puntero.compareTo(nextTerm);
+                if(nextTerm.equals("")) {
+                       j = puntero.compareTo(term);
+                       if(j > 1 ) {
+                           //System.out.print("E0");
+                           nextTerm = puntero;
+                       }
+                }
+                else if(!puntero.equals(term) && !nextTerm.equals(term)){
+                    j = puntero.compareTo(nextTerm);
+                    if (j < 1) {
+                        int k = puntero.compareTo(term);
+                        if (k > 1) {
+                           // System.out.print("E3");
+                            nextTerm = puntero;
+                        }
+                    }
+                    if (j > 1) {
+                       // System.out.print("E1");
+                        int k = term.compareTo(puntero);
+                        if (k > 1) {
+                            //System.out.print("E2");
+                            nextTerm = puntero;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        if(nextTerm.equals("")) return term;
+        else return nextTerm;
     }
 
 
     @Override
     public void close() {
 
-        //mergeAllBlocks();
+        System.out.println("Flush Ultimo: " + " termCounter: " + termCounter + " postCount: " + postingCouter);
+        flushBlock();
+
+        //System.out.println("El siguiente es: " + getNextTerm("z"));
+        mergeAllBlocks();
+        //int j = "and".compareTo("a");
+        //System.out.println("COMP:"+j);
+
 
         System.out.println(directory.toString());
         try {

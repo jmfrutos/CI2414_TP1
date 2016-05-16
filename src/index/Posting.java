@@ -52,11 +52,8 @@ public class Posting implements Comparable<Posting> {
     }
 
 
-    public static Posting fromString(String term, String input) {
-        String[] parts =input.split(":");
-        int documentId = Integer.parseInt(parts[0], Character.MAX_RADIX);
-        int occurence = Integer.parseInt(parts[1], Character.MAX_RADIX);
-        return new Posting(term, documentId, occurence);
+    public static Posting fromString(String term, String docId) {
+        return new Posting(term, Long.valueOf(docId), 1);
     }
 
     public String toString() {

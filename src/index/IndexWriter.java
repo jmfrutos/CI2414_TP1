@@ -8,6 +8,8 @@ import store.IOContext;
 import util.IOUtils;
 
 import javax.print.DocFlavor;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import analysis.Analyzer;
@@ -50,18 +52,18 @@ public abstract class IndexWriter {
 
     public abstract void addDocument(Document doc);
 
-    public void ramToFile(String path) {
+    public void ramToFile(String path, AbstractMap<String, ArrayList<Posting>> mapa) {
         IndexOutput block = null;
         StringBuilder str = new StringBuilder();
         // para cada token
-        Set set = map.keySet();
+        Set set = mapa.keySet();
         Iterator iter = set.iterator();
 
         while(iter.hasNext()) {
             String temp = (String)iter.next();
             str.append(temp + " ");
 
-            for (Posting i : map.get(temp)) {
+            for (Posting i : mapa.get(temp)) {
                 str.append(i.toString() + " ");
                 //System.out.println(i.toString());
             }
@@ -86,6 +88,31 @@ public abstract class IndexWriter {
                 IOUtils.closeWhileHandlingException(block);
                 IOUtils.deleteFilesIgnoringExceptions(directory, fileName);
             }
+        }
+
+    }
+
+    public void appendToFile(String path, String term, ArrayList<Posting> postings) {
+
+        StringBuilder str = new StringBuilder();
+        for (Posting i : postings) {
+            str.append(i.toString() + " ");
+        }
+        str.append("\n");
+
+
+        File file = new File(path);
+        try {
+            file.createNewFile();
+
+            FileWriter writer = new FileWriter(file, true);
+
+            writer.write(term+" "+str.toString());
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
