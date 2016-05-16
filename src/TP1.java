@@ -35,7 +35,7 @@ public class TP1 {
     public static void main(String[] args){
         //AQUI PRINCIPAL
         try {
-            JAgente ag = new JAgente("http://vistaatenasbnb.com");
+            JAgente ag = new JAgente("http://spanesi.es", false, true);
             ag.recorrerWEB();
         }
         catch (JauntException e) {
