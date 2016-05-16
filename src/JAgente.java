@@ -20,6 +20,7 @@ public class JAgente {
     private static Set<String> visitadas = new LinkedHashSet<String>();
     private static String dominio;
 
+
     JAgente(String direccion_url) throws JauntException {
         agente = new UserAgent();
         direccion = direccion_url;
@@ -77,6 +78,16 @@ public class JAgente {
         }
         catch (JauntException e) {
             System.err.println(e);
+        }
+    }
+
+    public static void main(String[] args){
+        try {
+            JAgente agente = new JAgente("http://semanariouniversidad.ucr.ac.cr");
+            agente.recorrerWEB();
+        }
+        catch (Exception e){
+
         }
     }
 }

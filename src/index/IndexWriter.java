@@ -48,7 +48,7 @@ public abstract class IndexWriter {
     public abstract void addDocument(Document doc);
 
     public void ramToFile(String path) {
-
+        IndexOutput block = null;
         StringBuilder str = new StringBuilder();
         // para cada token
         Set set = map.keySet();
@@ -60,20 +60,27 @@ public abstract class IndexWriter {
 
             for (Posting i : map.get(temp)) {
                 str.append(i.toString() + " ");
-                System.out.println("j"+i.toString());
+                //System.out.println(i.toString());
             }
             str.append("\n");
         }
 
+        try {
+            block = directory.createOutput(path, new IOContext(IOContext.Context.DEFAULT));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
-            out.writeString(str.toString());
+            block.writeString(str.toString());
+            IOUtils.close(block);
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
             if (!success) {
-                IOUtils.closeWhileHandlingException(out);
+                IOUtils.closeWhileHandlingException(block);
                 IOUtils.deleteFilesIgnoringExceptions(directory, fileName);
             }
         }

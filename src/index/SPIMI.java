@@ -4,6 +4,7 @@ import document.Document;
 import store.Directory;
 import store.IOContext;
 import util.IOUtils;
+import util.ObjectSizeFetcher;
 
 import java.util.StringTokenizer;
 import java.util.ArrayList;
@@ -23,16 +24,16 @@ public class SPIMI extends IndexWriter {
      */
 
 
-    private static int MEMORY_SIZE;
     private static Integer TotalBlockCounter = 0;
-    private int currentBlockNumber;
-    private int currentSize = 0;
+    private int postingCouter;
+    private int termCounter;
+    private int blockCounter;
+
 
     public SPIMI(Directory directory, IndexWriterConfig config) {
         super(directory, config);
 
         super.map = new TreeMap<String, ArrayList<Posting>>();
-        //MEMORY_SIZE = config.getInt("RAM_MEMORY_SIZE");
 
         try {
             fileName = "indice.txt";
@@ -41,6 +42,8 @@ public class SPIMI extends IndexWriter {
             //directory.deleteFile(fileName);
 
             success = true;
+            postingCouter = 0;
+            termCounter = 0;
 
         }
         catch (Exception e) {
@@ -66,7 +69,7 @@ public class SPIMI extends IndexWriter {
             System.out.println(e.getMessage());
         }
 
-        if(doc.getDocID() == 3) { System.out.println("Flush");flushBlock();} //TEMPORAL mientras se habilita revision de memoria
+        if(doc.getDocID() == 4) { System.out.println("Flush");flushBlock();} //TEMPORAL mientras se habilita revision de memoria
 
         System.out.println("Aqui se agrega al Diccionario documento: " + doc.getLink());
 
@@ -74,31 +77,51 @@ public class SPIMI extends IndexWriter {
 
 
     public boolean addDocToPList(String token, long docId) {
-        currentSize = -1;
-        if (currentSize >= MEMORY_SIZE) { //hay que habilitar esto de la memoria
-            System.out.println("Flush al llegar al doc:" + docId);
+
+       // System.out.println();
+
+        int usedRAM = getMapRAM();
+       // System.out.println("doc:" + docId + " termCounter: " + termCounter + " postCount: " + postingCouter + " Ram: "+ usedRAM);
+        if (usedRAM >= config.RAM_MEMORY_SIZE) {
+            System.out.println("Flush doc:" + docId + " termCounter: " + termCounter + " postCount: " + postingCouter + " Ram: "+ usedRAM);
             flushBlock();
         }
-
+        //System.out.println("if:" + docId + token);
         if (map.containsKey(token)) {
-            map.get(token).add(new Posting(token, docId,1));
-            return true;
+            //int position = map.get(token).indexOf(docId); //Para ver si el docId ya esta en la lista de postings
+            if (!map.get(token).contains(new Posting(token,docId,1))) { // si el docId no esta
+                map.get(token).add(new Posting(token, docId, 1));
+                postingCouter++;
+                return true;
+            }
+            else return true; //si no esta entonces no lo agregamos, en la TP aumentamos frecuencia
         }
         else {
 
             ArrayList<Posting> documentList = new ArrayList<Posting>();
             documentList.add(new Posting(token, docId,1));
             map.put(token, documentList);
+            postingCouter++;
+            termCounter++;
             return true;
         }
     }
 
 
     public void flushBlock() {
-        ramToFile("block-"+String.valueOf(currentBlockNumber) + ".txt");
+        ramToFile("block-"+String.valueOf(blockCounter) + ".txt");
         map.clear();
-        TotalBlockCounter++;
-        currentBlockNumber = TotalBlockCounter;
-        currentSize = MEMORY_SIZE;
+        blockCounter++;
+        termCounter = 0;
+        postingCouter = 0;
+    }
+
+    // Supone que el tamaño promedio es 11 caracteres. Ej: "Hello World" is 11 characters long, I would estimate
+    // its size as 2*11+4+4+4=34 bytes on computers with 32-bit pointers, or 2*11+8+4+4=38 bytes on
+    // computers with 64-bit pointers.
+    // Retorna la memoria del mapa en Bytes
+    public int getMapRAM(){
+        int termsSize = 2*11+8+4+4+4* termCounter;
+        return (Integer)(termsSize + postingCouter*64)/8; //Posting usa Long (64 bits)
     }
 }
