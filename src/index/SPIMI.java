@@ -45,6 +45,7 @@ public class SPIMI extends IndexWriter {
             success = true;
             postingCouter = 0;
             termCounter = 0;
+            blockCounter = 0;
 
         }
         catch (Exception e) {
@@ -143,7 +144,7 @@ public class SPIMI extends IndexWriter {
 
             File inputFile = new File(path);
 
-            System.out.println("opening " + inputFile.getAbsolutePath());
+           // System.out.println("opening " + inputFile.getAbsolutePath());
             FileReader fstream = new FileReader(inputFile);
             BufferedReader in = new BufferedReader(fstream);
 
@@ -192,24 +193,27 @@ public class SPIMI extends IndexWriter {
 
         //Para cada term
         while (! lastTerm.equals(nextTerm)) {
+            System.out.println(nextTerm);
 
             ArrayList<Posting> lista = new ArrayList<Posting>(); //lista vacia para cada termino
 
             //Hacer merge de postings de cada bloque
-            for (int i = 0; i < blockCounter-1; i++) {
+            for (int i = 0; i < blockCounter; i++) {
                 AbstractMap<String, ArrayList<Posting>> map1 = readFromDisk("C:\\indice\\block-"+i+".txt");
-                int j = i + 1;
-                AbstractMap<String, ArrayList<Posting>> map2 = readFromDisk("C:\\indice\\block-"+j+".txt");
 
-                lista = mergePostingList(map1.get(nextTerm), map2.get(nextTerm));
+
+                lista = mergePostingList(map1.get(nextTerm), lista);
+                //System.out.println(lista);
             }
 
             //Agregar la lista de postings en indice
+            //System.out.println(lista.toString());
             appendToFile("C:\\indice\\indice.txt", nextTerm, lista);
 
             lastTerm = nextTerm;
             nextTerm = getNextTerm(nextTerm);
         }
+
 
     }
 
@@ -267,7 +271,7 @@ public class SPIMI extends IndexWriter {
         System.out.println("Flush Ultimo: " + " termCounter: " + termCounter + " postCount: " + postingCouter);
         flushBlock();
 
-        //System.out.println("El siguiente es: " + getNextTerm("z"));
+        //System.out.println("El siguiente es: " + getNextTerm("casa"));
         mergeAllBlocks();
         //int j = "and".compareTo("a");
         //System.out.println("COMP:"+j);

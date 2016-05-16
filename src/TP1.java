@@ -19,6 +19,7 @@ import document.Document;
 import index.IndexWriter;
 import index.IndexWriterConfig;
 import index.SPIMI;
+import index.BSBI;
 import store.Directory;
 import store.FSDirectory;
 import store.RAMDirectory;
@@ -104,7 +105,7 @@ public class TP1 {
             //
             // iwc.setRAMBufferSizeMB(256.0);
 
-            IndexWriter writer = new SPIMI(dir, analyzer, iwc);
+            IndexWriter writer = new BSBI(dir, analyzer, iwc);
             indexDocs(writer,docDir);
 
             // NOTE: if you want to maximize search performance,

@@ -65,7 +65,7 @@ public abstract class IndexWriter {
 
             for (Posting i : mapa.get(temp)) {
                 str.append(i.toString() + " ");
-                //System.out.println(i.toString());
+
             }
             str.append("\n");
         }

@@ -14,6 +14,7 @@ public class Posting implements Comparable<Posting> {
         this.documentId = documentId;
         this.occurence = occurence;
         this.term = term;
+
     }
 
     public long getDocumentId() {
@@ -57,7 +58,7 @@ public class Posting implements Comparable<Posting> {
     }
 
     public String toString() {
-        return Long.toString(getDocumentId(), Character.MAX_RADIX);
+        return Long.toUnsignedString(documentId);
     }
 
     @Override
