@@ -1,5 +1,6 @@
 package index;
 
+import analysis.Analyzer;
 import document.Document;
 import store.Directory;
 import store.IOContext;
@@ -30,8 +31,8 @@ public class SPIMI extends IndexWriter {
     private int blockCounter;
 
 
-    public SPIMI(Directory directory, IndexWriterConfig config) {
-        super(directory, config);
+    public SPIMI(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
+        super(directory, analyzer, config);
 
         super.map = new TreeMap<String, ArrayList<Posting>>();
 
@@ -55,9 +56,8 @@ public class SPIMI extends IndexWriter {
     public void addDocument(Document doc) {
         super.numDocs++;
         doc.setDocID(super.numDocs);
-        System.out.println(numDocs);
-        config.getAnalyzer().analyze(doc);
 
+        super.analyzer.analyze(doc);
 
         tokenizer = new StringTokenizer(doc.getBody_normalized());
         try {

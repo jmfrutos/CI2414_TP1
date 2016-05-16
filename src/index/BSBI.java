@@ -1,5 +1,6 @@
 package index;
 
+import analysis.Analyzer;
 import store.Directory;
 
 /**
@@ -11,7 +12,7 @@ public abstract class BSBI extends IndexWriter {
      * @param directory
      * @param config
      */
-    public BSBI(Directory directory, IndexWriterConfig config) {
-        super(directory, config);
+    public BSBI(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
+        super(directory, analyzer, config);
     }
 }

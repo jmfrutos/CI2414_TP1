@@ -84,8 +84,9 @@ public class TP1 {
             System.out.println("Indexing to directory '" + indexPath + "'...");
 
             Directory dir = FSDirectory.open(Paths.get(indexPath));
-            Analyzer analyzer = new StandardAnalyzer();
-            IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+
+            IndexWriterConfig iwc = new IndexWriterConfig();
+            Analyzer analyzer = new StandardAnalyzer(iwc);
 
             if (create) {
                 // Create a new index in the directory, removing any
@@ -103,8 +104,8 @@ public class TP1 {
             //
             // iwc.setRAMBufferSizeMB(256.0);
 
-            IndexWriter writer = new SPIMI(dir, iwc);
-            indexDocs(writer, docDir);
+            IndexWriter writer = new SPIMI(dir, analyzer, iwc);
+            indexDocs(writer,docDir);
 
             // NOTE: if you want to maximize search performance,
             // you can optionally call forceMerge here.  This can be

@@ -10,6 +10,7 @@ import util.IOUtils;
 import javax.print.DocFlavor;
 import java.io.IOException;
 import java.util.*;
+import analysis.Analyzer;
 
 /**
  * Created by CAndres on 5/11/2016.
@@ -24,6 +25,7 @@ public abstract class IndexWriter {
 
     Directory directory;
     IndexWriterConfig config;
+    Analyzer analyzer;
 
     Long numDocs;
 
@@ -38,8 +40,9 @@ public abstract class IndexWriter {
      *  to {@link Directory#createOutput(String,IOContext)}. */
     //public final IOContext context = new IOContext(DEFAULT);
 
-    public IndexWriter(Directory directory, IndexWriterConfig config) {
+    public IndexWriter(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
         this.directory = directory;
+        this.analyzer = analyzer;
         this.config = config;
         this.success = false;
         this.numDocs= new Long(0);

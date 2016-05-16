@@ -12,19 +12,19 @@ import java.util.TreeMap;
  */
 public class IndexWriterConfig {
 
-    public final Analyzer analyzer;
 
-    public static final int RAM_MEMORY_SIZE = 3000; //En Bytes: Ej: [1 term (42 bits) + 1 post (64 bits)]/8 = 13 Bytes
+    public static final int RAM_MEMORY_SIZE = 262144; //En Bytes: Ej: [1 term (42 bits) + 1 post (64 bits)]/8 = 13 Bytes
+
+    public static final boolean COMPRESSION_NO_NUMBER = false;
+    public static final boolean COMPRESSION_CASE_FOLDING = false;
+    public static final boolean COMPRESSION_STOP_WORDS = false;
+    public static final boolean COMPRESSION_STEMMING = true;
 
 
-    public IndexWriterConfig(Analyzer analyzer) {
-        this.analyzer = analyzer;
+    public IndexWriterConfig() {
+
     }
 
-    /** Returns the default analyzer to use for indexing documents. */
-    public Analyzer getAnalyzer() {
-        return analyzer;
-    }
 
 
 
