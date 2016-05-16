@@ -38,14 +38,7 @@ public class JAgente {
         normalizacionAlta = tipoNormalizacion;
         stemming_norm = stemming;
 
-        try {
-            URI uri = new URI(direccion_url);
-            dominio = uri.getHost();
-
-        }
-        catch (URISyntaxException e) {
-
-        }
+        dominio = getDominioURL(direccion_url);
 
         rutaDominio = rutaFuentes + dominio + "/";
 
@@ -97,9 +90,12 @@ public class JAgente {
                 catch (IOException e) {
 
                 }
+
+
+
                 //EXTRAE LINKS Y GUARDA LOS DE LA MISMA PAGINA
                 for (Element link: agente.doc.findEach("<a href>")) {
-                    if ((link.getAt("href").contains(dominio)) && !link.getAt("href").contains("#")) {
+                    if ((dominio.equals(getDominioURL(link.getAt("href")))) && !link.getAt("href").contains("#")) {
                         //LIMITADO SOLO A HMTLS**************************
                         //if (link.getAt("href").contains(".html") || link.getAt("href").contains(".htm") || link.getAt("href").contains(".php") || link.getAt("href").contains(".asp") || link.getAt("href").contains(".aspx") || link.getAt("href").contains(".xml")) {
                             sitemap.add(link.getAt("href"));
@@ -223,6 +219,19 @@ public class JAgente {
         Stemm_es stemm = new Stemm_es();
 
         return stemm.stemm(input);
+    }
+
+    public String getDominioURL(String input) {
+        String dominio = "";
+
+        try {
+            URI uri = new URI(input);
+            dominio = uri.getHost();
+        }
+        catch (URISyntaxException e) {
+
+        }
+        return dominio;
     }
 
     public static void main(String[] args){
