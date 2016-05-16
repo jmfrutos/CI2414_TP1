@@ -227,7 +227,7 @@ public class JAgente {
 
     public static void main(String[] args){
         try {
-            JAgente agente = new JAgente("http://semanariouniversidad.ucr.ac.cr");
+            JAgente agente = new JAgente("http://semanariouniversidad.ucr.ac.cr", true, true);
             agente.recorrerWEB();
         }
         catch (Exception e){
