@@ -13,12 +13,14 @@ import java.util.TreeMap;
 public class IndexWriterConfig {
 
 
-    public static final int RAM_MEMORY_SIZE = 64000;//262144; // 120; //En Bytes: Ej: [1 term (42 bits) + 1 post (64 bits)]/8 = 13 Bytes
+    public static final int RAM_MEMORY_SIZE = 32000;//262144; // 120; //En Bytes: Ej: [1 term (42 bits) + 1 post (64 bits)]/8 = 13 Bytes
 
     public static final boolean COMPRESSION_NO_NUMBER = false;
     public static final boolean COMPRESSION_CASE_FOLDING = false;
     public static final boolean COMPRESSION_STOP_WORDS = false;
     public static final boolean COMPRESSION_STEMMING = true;
+    public static final boolean COMPRESSION_PUNTUATION = true;
+    public static final boolean COMPRESSION_ECHARACTERES = true;
 
 
     public IndexWriterConfig() {

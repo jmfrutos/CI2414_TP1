@@ -6,9 +6,11 @@ import store.Directory;
 import store.IOContext;
 import util.IOUtils;
 import util.ObjectSizeFetcher;
+import store.IndexOutput;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -29,12 +31,11 @@ public class SPIMI extends IndexWriter {
     private int postingCouter;
     private int termCounter;
     private int blockCounter;
-
+    AbstractMap<String, ArrayList<Posting>> map;
 
     public SPIMI(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
         super(directory, analyzer, config);
-
-        super.map = new TreeMap<String, ArrayList<Posting>>();
+        map = new TreeMap<String, ArrayList<Posting>>();
 
         try {
             fileName = "indice.txt";
@@ -81,7 +82,7 @@ public class SPIMI extends IndexWriter {
        // System.out.println();
 
         int usedRAM = getMapRAM();
-       // System.out.println("doc:" + docId + " termCounter: " + termCounter + " postCount: " + postingCouter + " Ram: "+ usedRAM);
+       // System.out.println("doc:" + docId + "token:"+token + " termCounter: " + termCounter + " postCount: " + postingCouter + " Ram: "+ usedRAM);
         if (usedRAM >= config.RAM_MEMORY_SIZE) {
             System.out.println("Flush doc:" + docId + " termCounter: " + termCounter + " postCount: " + postingCouter + " Ram: "+ usedRAM);
             flushBlock();
@@ -97,7 +98,6 @@ public class SPIMI extends IndexWriter {
             else return true; //si no esta entonces no lo agregamos, en la TP aumentamos frecuencia
         }
         else {
-
             ArrayList<Posting> documentList = new ArrayList<Posting>();
             documentList.add(new Posting(token, docId,1));
             map.put(token, documentList);
@@ -262,6 +262,71 @@ public class SPIMI extends IndexWriter {
 
         if(nextTerm.equals("")) return term;
         else return nextTerm;
+    }
+
+    public void ramToFile(String path, AbstractMap<String, ArrayList<Posting>> mapa) {
+        IndexOutput block = null;
+        StringBuilder str = new StringBuilder();
+        // para cada token
+        Set set = mapa.keySet();
+        Iterator iter = set.iterator();
+
+        while(iter.hasNext()) {
+            String temp = (String)iter.next();
+            str.append(temp + " ");
+
+            for (Posting i : mapa.get(temp)) {
+                str.append(i.toString() + " ");
+
+            }
+            str.append("\n");
+        }
+
+        try {
+            block = directory.createOutput(path, new IOContext(IOContext.Context.DEFAULT));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            block.writeString(str.toString());
+            IOUtils.close(block);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (!success) {
+                IOUtils.closeWhileHandlingException(block);
+                IOUtils.deleteFilesIgnoringExceptions(directory, fileName);
+            }
+        }
+
+    }
+
+    public void appendToFile(String path, String term, ArrayList<Posting> postings) {
+
+        StringBuilder str = new StringBuilder();
+        for (Posting i : postings) {
+            str.append(i.toString() + " ");
+        }
+        str.append("\n");
+
+
+        File file = new File(path);
+        try {
+            file.createNewFile();
+
+            FileWriter writer = new FileWriter(file, true);
+
+            writer.write(term+" "+str.toString());
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

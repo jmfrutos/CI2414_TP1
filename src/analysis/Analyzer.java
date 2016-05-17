@@ -14,4 +14,16 @@ public abstract class Analyzer {
     }
 
     public abstract void analyze(Document doc);
+
+    public abstract String Normalizar(String input, boolean alta);
+
+    public abstract String removerStopWords(String input);
+
+    public abstract int getHashCode(String texto);
+
+    public abstract String limpiarTextoCaracteresEspeciales(String input);
+
+    public abstract String limpiarPuntuacion(String input);
+
+    public abstract String aplicarStemming(String input);
 }
