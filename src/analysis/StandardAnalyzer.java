@@ -24,6 +24,7 @@ public class StandardAnalyzer extends Analyzer  {
     private String rutaDominio;
     private String rutaConfig = "/Config/";
     private String rutaIndice = "/Indice/";
+    private String ficheroStopWords = "stopwordES.txt"; //http://www.ranks.nl/stopwords/spanish
 
     public StandardAnalyzer(){}
 
@@ -43,36 +44,57 @@ public class StandardAnalyzer extends Analyzer  {
             e.printStackTrace();
         }
 
+
         if(config.COMPRESSION_CASE_FOLDING)
             doc.setBody_normalized(agente.doc.innerText().toLowerCase());
 
-        // ----   PUNTUATION ------
-        if(config.COMPRESSION_PUNTUATION)
-            doc.setBody_normalized(limpiarPuntuacion(doc.getBody_normalized()));
 
-        // --- ESPECIAL CHARACTERES --
-        if(config.COMPRESSION_ECHARACTERES)
-            doc.setBody_normalized(limpiarTextoCaracteresEspeciales(doc.getBody_normalized()));
+        if( !doc.getBody_normalized().equals("")) {
 
-        // ----   STEMMING ------
-        if(config.COMPRESSION_STEMMING)
-            doc.setBody_normalized(aplicarStemming(doc.getBody_normalized()));
+            StringBuilder str = new StringBuilder();
+            StringTokenizer tokenizer = new StringTokenizer(doc.getBody_normalized());
 
-        // ----   STOPING WORD ------
-        if(config.COMPRESSION_STOP_WORDS)
-            doc.setBody_normalized(removerStopWords(doc.getBody_normalized()));
+            try {
+                while (tokenizer.hasMoreTokens()) {
+                    String word = tokenizer.nextToken();
 
-        // ----   NO NUMBERS ------
-        if(config.COMPRESSION_NO_NUMBER)
-            doc.setBody_normalized(removerStopWords(doc.getBody_normalized()));
 
-        // System.out.println(doc.getBody_normalized());
+                    // ----   PUNTUATION ------
+                    if (config.COMPRESSION_PUNTUATION && !word.equals(""))
+                        word = limpiarPuntuacion(word);
+
+                    // --- ESPECIAL CHARACTERES --
+                    if (config.COMPRESSION_ECHARACTERES && !word.equals(""))
+                        word = limpiarTextoCaracteresEspeciales(word);
+
+                    // ----   STEMMING ------
+                    if (config.COMPRESSION_STEMMING && !word.equals(""))
+                        word = aplicarStemming(word);
+
+                    // ----   STOPING WORD ------
+                    if (config.COMPRESSION_STOP_WORDS && !word.equals(""))
+                        word = removerStopWords(word);
+
+                    // ----   NO NUMBERS ------
+                    if (config.COMPRESSION_NO_NUMBER && !word.equals(""))
+                        word = removerNumbers(word);
+
+                    str.append(word + "\n");
+
+                }
+                doc.setBody_normalized(str.toString());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
     }
-    private void stem(Document doc){
-        //Lo siguiente es un EJEMPLO
-        PorterStemmer ps = new PorterStemmer();
 
-        String texto_con_steam = "";
+    // En contruccion
+    private void revisarXtoken(Document doc){
+        //Lo siguiente es un EJEMPLO
+        StringBuilder str = new StringBuilder();
+
         StringTokenizer tokenizer = new StringTokenizer(doc.getBody_normalized());
 
         try {
@@ -86,7 +108,7 @@ public class StandardAnalyzer extends Analyzer  {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        doc.setBody_normalized(texto_con_steam);
+
     }
 
     /**
@@ -123,7 +145,7 @@ public class StandardAnalyzer extends Analyzer  {
         String regex = "\\b(";
 
         try {
-            FileReader fr = new FileReader(rutaConfig + "ficheroStopWords");
+            FileReader fr = new FileReader(rutaConfig + ficheroStopWords);
             BufferedReader br = new BufferedReader(fr);
             try {
                 while ((sCurrentLine = br.readLine()) != null) {
@@ -145,6 +167,16 @@ public class StandardAnalyzer extends Analyzer  {
         String s_stopwords = m.replaceAll("");
         return s_stopwords;
     }//removerStopWords
+
+    /**
+     * Función que elimina acentos y caracteres especiales de
+     * una cadena de texto.
+     * @param word
+     * @return cadena de texto limpia de acentos y caracteres especiales.
+     */
+    public String removerNumbers(String word){
+        return word.replaceAll("[0-9]","");
+    }
 
     /**
      * Función que elimina acentos y caracteres especiales de

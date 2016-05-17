@@ -34,20 +34,8 @@ public class TP1 {
 
     /** Index all text files under a directory. */
     public static void main(String[] args){
-        //AQUI PRINCIPAL
-        try {
-            JAgente ag = new JAgente("http://spanesi.es", false, true);
-            ag.recorrerWEB();
-        }
-        catch (JauntException e) {
 
-        }
-
-/**
-        Analyzer analyzer = new StandardAnalyzer();
-
-
-        /*String usage = "java org.apache.lucene.demo.IndexFiles"
+        String usage = "java org.apache.lucene.demo.IndexFiles"
                 + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
                 + "Indexa los documentos en DOCS_PATH, creando un Indice"
                 + "en INDEX_PATH en el cual luego se puede buscar utilizando SearchFiles";
@@ -114,7 +102,10 @@ public class TP1 {
             //
             // iwc.setRAMBufferSizeMB(256.0);
 
-            IndexWriter writer = new BSBI(dir, analyzer, iwc);
+            IndexWriter writer = null;
+
+            if(iwc.SPIMI) writer = new SPIMI(dir, analyzer, iwc);
+            if(iwc.BSBI)  writer = new BSBI(dir, analyzer, iwc);
             indexDocs(writer,docDir);
 
             // NOTE: if you want to maximize search performance,
@@ -134,7 +125,7 @@ public class TP1 {
         } catch (IOException e) {
             System.out.println(" caught a " + e.getClass() +
                     "\n with message: " + e.getMessage());
-        }*/
+        }
     }
 
     /**
