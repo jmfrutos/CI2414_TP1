@@ -105,6 +105,7 @@ public class JAgente {
                 }
                 //EXTRAE LINKS Y GUARDA LOS DE LA MISMA PAGINA
                 for (Element link: agente.doc.findEach("<a href>")) {
+                    //if (!link.getAt("href").contains("#")) {
                     if ((link.getAt("href").contains(dominio)) && !link.getAt("href").contains("#")) {
                         //LIMITADO SOLO A HMTLS**************************
                         //if (link.getAt("href").contains(".html") || link.getAt("href").contains(".htm") || link.getAt("href").contains(".php") || link.getAt("href").contains(".asp") || link.getAt("href").contains(".aspx") || link.getAt("href").contains(".xml")) {
@@ -141,7 +142,7 @@ public class JAgente {
 
     public static void main(String[] args){
         try {
-            JAgente agente = new JAgente("http://semanariouniversidad.ucr.ac.cr", true, true);
+            JAgente agente = new JAgente("http://spanesi.es", true, true);
             agente.recorrerWEB();
         }
         catch (Exception e){
