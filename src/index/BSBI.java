@@ -25,8 +25,8 @@ public class BSBI extends IndexWriter {
      */
 
 
-    private int postingCouter;
-    private int termCounter;
+    private int postingCouter; //Cuenta los posting en un bloque (Para calcular memoria)
+    private int termCounter; // Cuenta los teminos en un bloque (Para calcular memoria)
     private int blockCounter;
     AbstractMap<Integer, ArrayList<Posting>> map;
 
@@ -90,7 +90,7 @@ public class BSBI extends IndexWriter {
             flushBlock();
         }
 
-        if(!termMapping.containsKey(token)){ termCounter++; termMapping.put(token,termCounter); }
+        if(!termMapping.containsKey(token)){ termMapping.put(token,termMapping.size()+1); }
 
 
         //System.out.println("if:" + docId + token);
@@ -106,8 +106,8 @@ public class BSBI extends IndexWriter {
 
             ArrayList<Posting> documentList = new ArrayList<Posting>();
             documentList.add(new Posting(token, docId, 1));
-
             map.put(termMapping.get(token), documentList);
+            termCounter++;
             postingCouter++;
             return true;
         }
@@ -226,7 +226,7 @@ public class BSBI extends IndexWriter {
     }
 
     public void appendToFile(String path, Integer term, ArrayList<Posting> postings) {
-System.out.println("Apend:" + term);
+        //System.out.println("Apend:" + term);
         StringBuilder str = new StringBuilder();
         for (Posting i : postings) {
             str.append(i.toString() + " ");
@@ -316,6 +316,13 @@ System.out.println("Apend:" + term);
         flushBlock();
 
         mergeAllBlocks();
+        /*
+        Iterator<Map.Entry<String,Integer>> iter = entriesSortedByValues(termMapping).iterator();
+        while(iter.hasNext()) {
+            Map.Entry<String,Integer> entry = iter.next();
+            System.out.println(entry.getKey()+"-"+entry.getValue());
+        }
+        */
 
         try {
             directory.close();
