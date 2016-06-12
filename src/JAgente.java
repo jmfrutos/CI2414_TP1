@@ -257,11 +257,7 @@ public class JAgente {
 
 
 
-        /*JFrame frame = new JFrame("Buscador");
-        frame.setContentPane(new Buscador().getContentPane());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);*/
+
 
         try {
             JAgente agente = new JAgente("http://spanesi.es", true, true);
