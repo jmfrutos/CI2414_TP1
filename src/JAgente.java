@@ -76,7 +76,16 @@ public class JAgente {
                 tokenizer = new StringTokenizer(Normalizar(cuerpo, normalizacionAlta));
 
                 try {
-                    PrintWriter writer = new PrintWriter(rutaDominio + direccion.replaceAll("[^\\p{L}\\p{Nd}]+", "") + ".txt", "UTF-8");
+                    PrintWriter writer = new PrintWriter(rutaDominio + direccion.replaceAll("[^\\p{L}\\p{Nd}]+", "") + ".xml", "UTF-8");
+
+                    //CREACION XML
+
+                    writer.println("<docid></docid>");
+                    writer.println("<url>"+ direccion +"</>");
+                    writer.println("<titulo>"+ agente.doc.findFirst("title").innerText() + "</titulo>");
+
+                    writer.println("<cuerpo>");
+
                     while(tokenizer.hasMoreTokens()){
                         String str = "";
                         if (stemming_norm) {
@@ -87,6 +96,9 @@ public class JAgente {
                         }
                         writer.println(str);
                     }
+
+                    writer.println("</cuerpo>");
+
                     writer.close();
                 }
                 catch (IOException e) {
@@ -236,20 +248,27 @@ public class JAgente {
         return dominio;
     }
 
+    public String generarXML(){
+        return "";
+    }
+
     public static void main(String[] args){
 
-        JFrame frame = new JFrame("Buscador");
+
+
+
+        /*JFrame frame = new JFrame("Buscador");
         frame.setContentPane(new Buscador().getContentPane());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setVisible(true);
+        frame.setVisible(true);*/
 
-        /*try {
-            JAgente agente = new JAgente("http://semanariouniversidad.ucr.ac.cr", true, true);
+        try {
+            JAgente agente = new JAgente("http://spanesi.es", true, true);
             agente.recorrerWEB();
         }
         catch (Exception e){
 
-        }*/
+        }
     }
 }
