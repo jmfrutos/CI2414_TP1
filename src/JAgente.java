@@ -1,5 +1,7 @@
+import buscador.Buscador;
 import com.jaunt.*;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -235,12 +237,19 @@ public class JAgente {
     }
 
     public static void main(String[] args){
-        try {
+
+        JFrame frame = new JFrame("Buscador");
+        frame.setContentPane(new Buscador().getContentPane());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+
+        /*try {
             JAgente agente = new JAgente("http://semanariouniversidad.ucr.ac.cr", true, true);
             agente.recorrerWEB();
         }
         catch (Exception e){
 
-        }
+        }*/
     }
 }
