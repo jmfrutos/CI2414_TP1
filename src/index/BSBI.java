@@ -28,9 +28,10 @@ public class BSBI extends IndexWriter {
     private int postingCouter; //Cuenta los posting en un bloque (Para calcular memoria)
     private int termCounter; // Cuenta los teminos en un bloque (Para calcular memoria)
     private int blockCounter;
-    AbstractMap<Integer, ArrayList<Posting>> map;
+    AbstractMap<Integer, ArrayList<Posting>> map; //mapa de postings usado en cada bloque
 
     private AbstractMap<String,Integer> termMapping; //TermString - TermID
+    private AbstractMap<Integer,Integer> termDF;
 
     public BSBI(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
         super(directory, analyzer, config);
@@ -38,6 +39,7 @@ public class BSBI extends IndexWriter {
         map = new TreeMap<Integer, ArrayList<Posting>>();
 
         termMapping = new TreeMap<String, Integer>();
+        termDF = new TreeMap<Integer, Integer>();
 
         try {
             fileName = "indice.txt";
@@ -97,11 +99,21 @@ public class BSBI extends IndexWriter {
         System.out.println(termMapping.get(token));
         if (map.containsKey(termMapping.get(token))) { //Si el diccionario (del bloque) ya tiene el termino
             //int position = map.get(token).indexOf(docId); //Para ver si el docId ya esta en la lista de postings
-            if (!map.get(termMapping.get(token)).contains(new Posting(token, docId, 1))) { // si el docId no esta
+
+            Posting post = null;
+            for (Posting i : map.get(termMapping.get(token))) { //Ver si existe el Posting
+                if(i.getDocumentId()==docId) post=i;
+            }
+
+
+            if (post == null) { // si el docId no esta
                 map.get(termMapping.get(token)).add(new Posting(token, docId, 1));
                 postingCouter++;
                 return true;
-            } else return true; //no lo agregamos, en la TP aumentamos frecuencia
+            } else { //en la TP2 aumentamos frecuencia
+                post.setOccurence(post.getOccurence()+1);
+                return true;
+            }
         } else {
 
             ArrayList<Posting> documentList = new ArrayList<Posting>();
@@ -179,6 +191,10 @@ public class BSBI extends IndexWriter {
             int idx = b.indexOf(p1);
             if (idx == -1)
                 b.add(p1);
+            else{ // en TP sumar Ocurrencia
+                //System.out.println("SUMA"+b.get(idx).getOccurence()+""+p1.getOccurence());
+                b.get(idx).setOccurence(b.get(idx).getOccurence()+ p1.getOccurence());
+            }
 
         }
         return b;
@@ -209,7 +225,8 @@ public class BSBI extends IndexWriter {
                         term = st.nextToken();
                     }
                     else {
-                        postingList[i++] = Posting.fromString(term, st.nextToken());
+                        String str2[] = st.nextToken().split(":",2);
+                        postingList[i++] = Posting.fromString(term, str2[0], Integer.valueOf(str2[1]));
                     }
                 }
 
@@ -267,11 +284,11 @@ public class BSBI extends IndexWriter {
             ArrayList<Posting> lista = new ArrayList<Posting>(); //lista vacia para cada termino
 
             //Hacer merge de postings de cada bloque
-            for (int i = 0; i < blockCounter; i++) {
+            for (int i = 0; i <= blockCounter; i++) {
                 AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\block-"+i+".txt");
 
                 lista = mergePostingList(mapa_postings.get(entry.getValue()), lista);
-                //System.out.println(lista);
+                //System.out.println("LISTA: "+lista);
             }
 
             //Agregar la lista de postings en indice
@@ -282,7 +299,7 @@ public class BSBI extends IndexWriter {
 
     }
 
-    static <K,V extends Comparable<? super V>>
+    <K,V extends Comparable<? super V>>
     SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
         SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
                 new Comparator<Map.Entry<K,V>>() {

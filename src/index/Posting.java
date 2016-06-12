@@ -53,12 +53,12 @@ public class Posting implements Comparable<Posting> {
     }
 
 
-    public static Posting fromString(String term, String docId) {
-        return new Posting(term, Long.valueOf(docId), 1);
+    public static Posting fromString(String term, String docId, int occurency) {
+        return new Posting(term, Long.valueOf(docId), occurency);
     }
 
     public String toString() {
-        return Long.toUnsignedString(documentId);
+        return Long.toUnsignedString(documentId) + ":" + occurence;
     }
 
     @Override

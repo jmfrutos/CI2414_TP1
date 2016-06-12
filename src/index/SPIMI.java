@@ -163,7 +163,8 @@ public class SPIMI extends IndexWriter {
                         term = st.nextToken();
                     }
                     else {
-                        postingList[i++] = Posting.fromString(term, st.nextToken());
+                        String str2[] = st.nextToken().split(":",2);
+                        postingList[i++] = Posting.fromString(term, str2[0], Integer.valueOf(str2[1]));
                     }
                 }
 
@@ -198,7 +199,7 @@ public class SPIMI extends IndexWriter {
             ArrayList<Posting> lista = new ArrayList<Posting>(); //lista vacia para cada termino
 
             //Hacer merge de postings de cada bloque
-            for (int i = 0; i < blockCounter; i++) {
+            for (int i = 0; i <= blockCounter; i++) {
                 AbstractMap<String, ArrayList<Posting>> map1 = readFromDisk("C:\\indice\\block-"+i+".txt");
 
 
