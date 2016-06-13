@@ -33,6 +33,7 @@ public class BSBI extends IndexWriter {
     private AbstractMap<String,Integer> termMapping; //TermString - TermID
     public AbstractMap<Integer,Integer> termDF;
     public AbstractMap<Integer,Double> termIDF;
+    public AbstractMap<Integer,Double> docNorm;
     public int docCounter;
 
     public BSBI(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
@@ -43,6 +44,7 @@ public class BSBI extends IndexWriter {
         termMapping = new TreeMap<String, Integer>();
         termDF = new TreeMap<Integer, Integer>();
         termIDF = new TreeMap<Integer, Double>();
+        docNorm = new TreeMap<Integer, Double>();
 
         try {
             fileName = "indice.txt";
@@ -203,7 +205,9 @@ public class BSBI extends IndexWriter {
         return b;
     }
 
-    public  AbstractMap<Integer, ArrayList<Posting>> readFromDisk(String path) {
+    //OPTION 1= read frecuency/ocurrency (integer)
+    //OPTION 2= read wtf (double)
+    public  AbstractMap<Integer, ArrayList<Posting>> readFromDisk(String path, int option) {
         try {
             TreeMap<Integer, ArrayList<Posting>> newMap = new TreeMap<Integer, ArrayList<Posting>>();
 
@@ -229,7 +233,9 @@ public class BSBI extends IndexWriter {
                     }
                     else {
                         String str2[] = st.nextToken().split(":",2);
-                        postingList[i++] = Posting.fromString(term, str2[0], Integer.valueOf(str2[1]));
+                        if(option==1)
+                            postingList[i++] = Posting.fromString(term, str2[0], Integer.valueOf(str2[1]));
+                        else postingList[i++] = Posting.fromString(term, str2[0], Double.valueOf(str2[1]));
                     }
                 }
 
@@ -245,7 +251,7 @@ public class BSBI extends IndexWriter {
         return null;
     }
 
-    // OPCION 1= imprimir docID:tf 2= imprimir docID:wtf
+    // OPCION 1= imprimir docID:tf 2= imprimir docID:wtf 3=imprimir docID:tdidf
     public void appendToFile(String path, Integer term, ArrayList<Posting> postings, int opcion) {
         //System.out.println("Apend:" + term);
         StringBuilder str = new StringBuilder();
@@ -291,7 +297,7 @@ public class BSBI extends IndexWriter {
 
             //Hacer merge de postings de cada bloque
             for (int i = 0; i < blockCounter; i++) {
-                AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\block-"+i+".txt");
+                AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\block-"+i+".txt",1);
 
                 lista = mergePostingList(mapa_postings.get(entry.getValue()), lista);
                 //System.out.println("LISTA: "+lista);
@@ -356,7 +362,8 @@ public class BSBI extends IndexWriter {
     }
 
     public void calcularWtd(){
-        AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\indice.txt");
+        clearFile("C:\\indice\\tf.txt");
+        AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\indice.txt",1);
         for(Map.Entry<Integer, ArrayList<Posting>> entry : mapa_postings.entrySet()){
             for(Posting p : entry.getValue()){
                 p.setWtf( 1+ Math.log10( p.getOccurence()));
@@ -374,6 +381,54 @@ public class BSBI extends IndexWriter {
     }
 
 
+    public void calcularTFIDF(){
+        clearFile("C:\\indice\\tfidf.txt");
+        AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\tf.txt",2);
+        for(Map.Entry<Integer, ArrayList<Posting>> entry : mapa_postings.entrySet()){
+            for(Posting p : entry.getValue()){
+                //System.out.println("termTFIDF"+entry.getKey()+":"+termIDF.get(entry.getKey()) +" Wtf" + p.getWtf());
+                p.setWtf( termIDF.get(entry.getKey()) * p.getWtf());
+
+                //System.out.println("termTFIDF"+termIDF.get(entry.getKey()) * p.getWtf());
+            }
+
+            appendToFile("C:\\indice\\tfidf.txt", entry.getKey(), entry.getValue(), 2);
+        }
+    }
+
+    public void calcularNormEU(){
+
+        for(int i=1;i<=docCounter;i++){
+            docNorm.put(i,0.0);
+        }
+
+        AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\tfidf.txt",2);
+        for(Map.Entry<Integer, ArrayList<Posting>> entry : mapa_postings.entrySet()){
+            for(Posting p : entry.getValue()){
+                docNorm.put((int)p.getDocumentId(), docNorm.get((int)p.getDocumentId()) + p.getWtf() * p.getWtf());
+            }
+        }
+
+        for(int i=1;i<=docCounter;i++){
+            docNorm.put(i,Math.sqrt(docNorm.get(i)));
+        }
+    }
+
+    private void clearFile(String filename){
+        try {
+            File file = new File(filename);
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file);
+            writer.write("");
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     public void close() {
 
@@ -386,7 +441,9 @@ public class BSBI extends IndexWriter {
         calcularWtd();
         calcularIDF();
         System.out.println(termIDF);
-
+        calcularTFIDF();
+        calcularNormEU();
+        System.out.println(docNorm);
 
         /*
         Iterator<Map.Entry<String,Integer>> iter = entriesSortedByValues(termMapping).iterator();

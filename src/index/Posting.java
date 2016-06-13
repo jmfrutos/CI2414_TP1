@@ -25,7 +25,13 @@ public class Posting implements Comparable<Posting> {
         this.occurence = occurence;
         this.term = term;
         this.wtf = 0;
-
+    }
+    public Posting(String term, long documentId, double wtf) {
+        super();
+        this.documentId = documentId;
+        this.occurence = 0;
+        this.term = term;
+        this.wtf = wtf;
     }
 
     public long getDocumentId() {
@@ -66,6 +72,10 @@ public class Posting implements Comparable<Posting> {
 
     public static Posting fromString(String term, String docId, int occurence) {
         return new Posting(term, Long.valueOf(docId), occurence);
+    }
+
+    public static Posting fromString(String term, String docId, double valor) {
+        return new Posting(term, Long.valueOf(docId), valor);
     }
 
     public String toString() {
