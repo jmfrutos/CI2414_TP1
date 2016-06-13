@@ -414,6 +414,20 @@ public class BSBI extends IndexWriter {
         }
     }
 
+    public void calcularLengthNormalization(){
+
+        clearFile("C:\\indice\\norm.txt");
+        AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\tfidf.txt",2);
+        for(Map.Entry<Integer, ArrayList<Posting>> entry : mapa_postings.entrySet()){
+            for(Posting p : entry.getValue()){
+                if(docNorm.get((int)p.getDocumentId())!=0)
+                    p.setWtf( p.getWtf() / docNorm.get((int)p.getDocumentId()));
+            }
+
+            appendToFile("C:\\indice\\norm.txt", entry.getKey(), entry.getValue(), 2);
+        }
+    }
+
     private void clearFile(String filename){
         try {
             File file = new File(filename);
@@ -444,6 +458,8 @@ public class BSBI extends IndexWriter {
         calcularTFIDF();
         calcularNormEU();
         System.out.println(docNorm);
+        calcularLengthNormalization();
+
 
         /*
         Iterator<Map.Entry<String,Integer>> iter = entriesSortedByValues(termMapping).iterator();
