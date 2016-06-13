@@ -5,6 +5,8 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -23,14 +25,29 @@ public class Buscador extends JFrame {
         textPane1_resultados.addHyperlinkListener(new HyperlinkListener() {
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e) {
-                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    if(Desktop.isDesktopSupported()) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    if (Desktop.isDesktopSupported()) {
                         try {
                             Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (URISyntaxException | IOException e1) {
                         }
-                        catch (URISyntaxException | IOException e1) {};
+                        ;
 
                     }
+                }
+            }
+        });
+        buscarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Buscando...");
+
+                if (textField1_consulta.getText().isEmpty()) {
+
+                    JOptionPane.showMessageDialog(new Frame(), "No ha ingresado términos para buscar.", "¡Atención!", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    Consulta c = new Consulta(textField1_consulta.getText());
+                    textPane1_resultados.setText(c.buscar());
                 }
             }
         });
