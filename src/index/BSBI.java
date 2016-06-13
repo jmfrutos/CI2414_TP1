@@ -31,7 +31,9 @@ public class BSBI extends IndexWriter {
     AbstractMap<Integer, ArrayList<Posting>> map; //mapa de postings usado en cada bloque
 
     private AbstractMap<String,Integer> termMapping; //TermString - TermID
-    private AbstractMap<Integer,Integer> termDF;
+    public AbstractMap<Integer,Integer> termDF;
+    public AbstractMap<Integer,Double> termIDF;
+    public int docCounter;
 
     public BSBI(Directory directory, Analyzer analyzer, IndexWriterConfig config) {
         super(directory, analyzer, config);
@@ -40,6 +42,7 @@ public class BSBI extends IndexWriter {
 
         termMapping = new TreeMap<String, Integer>();
         termDF = new TreeMap<Integer, Integer>();
+        termIDF = new TreeMap<Integer, Double>();
 
         try {
             fileName = "indice.txt";
@@ -51,7 +54,7 @@ public class BSBI extends IndexWriter {
             postingCouter = 0;
             blockCounter = 0;
             termCounter = 0;
-
+            docCounter = 0;
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +66,7 @@ public class BSBI extends IndexWriter {
         super.numDocs++;
 
         doc.setDocID(super.numDocs);
-
+        docCounter++;
         super.analyzer.analyze(doc);
 
         tokenizer = new StringTokenizer(doc.getBody_normalized());
@@ -363,7 +366,12 @@ public class BSBI extends IndexWriter {
         }
     }
 
-
+    public void calcularIDF(){
+        for(Map.Entry<Integer, Integer> entry : termDF.entrySet()){
+            termIDF.put(entry.getKey(), Math.log10(docCounter/entry.getValue()));
+            System.out.println("termIDF"+entry.getKey()+"-"+Math.log10(docCounter/entry.getValue()));
+        }
+    }
 
 
     @Override
@@ -376,6 +384,9 @@ public class BSBI extends IndexWriter {
 
         calcularDF();
         calcularWtd();
+        calcularIDF();
+        System.out.println(termIDF);
+
 
         /*
         Iterator<Map.Entry<String,Integer>> iter = entriesSortedByValues(termMapping).iterator();
