@@ -199,7 +199,7 @@ public class SPIMI extends IndexWriter {
             ArrayList<Posting> lista = new ArrayList<Posting>(); //lista vacia para cada termino
 
             //Hacer merge de postings de cada bloque
-            for (int i = 0; i <= blockCounter; i++) {
+            for (int i = 0; i < blockCounter; i++) {
                 AbstractMap<String, ArrayList<Posting>> map1 = readFromDisk("C:\\indice\\block-"+i+".txt");
 
 

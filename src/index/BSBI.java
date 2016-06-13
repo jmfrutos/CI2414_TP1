@@ -242,11 +242,14 @@ public class BSBI extends IndexWriter {
         return null;
     }
 
-    public void appendToFile(String path, Integer term, ArrayList<Posting> postings) {
+    // OPCION 1= imprimir docID:tf 2= imprimir docID:wtf
+    public void appendToFile(String path, Integer term, ArrayList<Posting> postings, int opcion) {
         //System.out.println("Apend:" + term);
         StringBuilder str = new StringBuilder();
         for (Posting i : postings) {
-            str.append(i.toString() + " ");
+            if(opcion == 1)
+                str.append(i.toString() + " ");
+            else str.append(i.toString2() + " ");
         }
         str.append("\n");
 
@@ -284,7 +287,7 @@ public class BSBI extends IndexWriter {
             ArrayList<Posting> lista = new ArrayList<Posting>(); //lista vacia para cada termino
 
             //Hacer merge de postings de cada bloque
-            for (int i = 0; i <= blockCounter; i++) {
+            for (int i = 0; i < blockCounter; i++) {
                 AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\block-"+i+".txt");
 
                 lista = mergePostingList(mapa_postings.get(entry.getValue()), lista);
@@ -293,7 +296,7 @@ public class BSBI extends IndexWriter {
 
             //Agregar la lista de postings en indice
             //System.out.println(lista.toString());
-            appendToFile("C:\\indice\\indice.txt", entry.getValue(), lista);
+            appendToFile("C:\\indice\\indice.txt", entry.getValue(), lista, 1);
 
         }
 
@@ -324,6 +327,43 @@ public class BSBI extends IndexWriter {
     }
 **/
 
+    public void calcularDF(){
+        try {
+
+            File inputFile = new File("C:\\indice\\indice.txt");
+
+            // System.out.println("opening " + inputFile.getAbsolutePath());
+            FileReader fstream = new FileReader(inputFile);
+            BufferedReader in = new BufferedReader(fstream);
+
+            String line = in.readLine();
+
+
+            String term = null;
+            while (line != null) {
+                StringTokenizer st = new StringTokenizer(line);
+                termDF.put(Integer.valueOf(st.nextToken()),st.countTokens());
+                line = in.readLine();
+            }
+
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void calcularWtd(){
+        AbstractMap<Integer, ArrayList<Posting>> mapa_postings = readFromDisk("C:\\indice\\indice.txt");
+        for(Map.Entry<Integer, ArrayList<Posting>> entry : mapa_postings.entrySet()){
+            for(Posting p : entry.getValue()){
+                p.setWtf( 1+ Math.log10( p.getOccurence()));
+            }
+
+            appendToFile("C:\\indice\\tf.txt", entry.getKey(), entry.getValue(), 2);
+        }
+    }
+
+
 
 
     @Override
@@ -333,6 +373,10 @@ public class BSBI extends IndexWriter {
         flushBlock();
 
         mergeAllBlocks();
+
+        calcularDF();
+        calcularWtd();
+
         /*
         Iterator<Map.Entry<String,Integer>> iter = entriesSortedByValues(termMapping).iterator();
         while(iter.hasNext()) {

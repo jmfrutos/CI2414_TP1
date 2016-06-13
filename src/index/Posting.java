@@ -9,11 +9,22 @@ public class Posting implements Comparable<Posting> {
     private int occurence;
     private String term;
 
+    public double getWtf() {
+        return wtf;
+    }
+
+    public void setWtf(double wtf) {
+        this.wtf = wtf;
+    }
+
+    private double wtf;
+
     public Posting(String term, long documentId, int occurence) {
         super();
         this.documentId = documentId;
         this.occurence = occurence;
         this.term = term;
+        this.wtf = 0;
 
     }
 
@@ -53,12 +64,16 @@ public class Posting implements Comparable<Posting> {
     }
 
 
-    public static Posting fromString(String term, String docId, int occurency) {
-        return new Posting(term, Long.valueOf(docId), occurency);
+    public static Posting fromString(String term, String docId, int occurence) {
+        return new Posting(term, Long.valueOf(docId), occurence);
     }
 
     public String toString() {
         return Long.toUnsignedString(documentId) + ":" + occurence;
+    }
+
+    public String toString2() {
+        return Long.toUnsignedString(documentId) + ":" + wtf;
     }
 
     @Override
