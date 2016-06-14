@@ -428,6 +428,11 @@ public class BSBI extends IndexWriter {
         }
     }
 
+    public void printTermMapping(){
+
+
+    }
+
     private void clearFile(String filename){
         try {
             File file = new File(filename);
@@ -460,6 +465,7 @@ public class BSBI extends IndexWriter {
         System.out.println(docNorm);
         calcularLengthNormalization();
 
+        printTermMapping();
 
         /*
         Iterator<Map.Entry<String,Integer>> iter = entriesSortedByValues(termMapping).iterator();
