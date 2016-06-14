@@ -26,13 +26,6 @@ public class Consulta {
     private AbstractMap<String,Integer> termMapping = new TreeMap<String, Integer>(); //termID - termNombre
     private AbstractMap<Integer, Double> termNorm = new TreeMap<Integer, Double>(); //termID - normalizacion de la consulta
     private AbstractMap<Integer,Double> docSimilitud = new TreeMap<Integer, Double>(); // docID - conseno similitud (double)
-    private AbstractMap<Double,Integer> docSimilitudDSC = new TreeMap<Double,Integer>(new Comparator<Double>()
-    {
-        @Override
-        public int compare(Double o1, Double o2) {
-            return o2.compareTo(o1);
-        }
-    });
     public ArrayList consulta_terms = new ArrayList(); //tiene los ids de los terminos que estan en el diccionario (termMapping)
 
     public Consulta(){
@@ -161,8 +154,21 @@ public class Consulta {
     // Ordenar docSimilitud y guardarlos en resultados
     private void ordenar(){
 
-        for(Map.Entry<Integer, Double> datos : docSimilitud.entrySet()) {
-            docSimilitudDSC.put(datos.getValue(), datos.getKey());
-        }
+        System.out.println(entriesSortedByValues(docSimilitud));
+
+    }
+
+    static <K,V extends Comparable<? super V>>
+    SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+                new Comparator<Map.Entry<K,V>>() {
+                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+                        int res = e2.getValue().compareTo(e1.getValue());
+                        return res != 0 ? res : 1;
+                    }
+                }
+        );
+        sortedEntries.addAll(map.entrySet());
+        return sortedEntries;
     }
 }
