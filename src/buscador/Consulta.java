@@ -181,7 +181,7 @@ public class Consulta {
             if(termTFIDF.containsKey(entry.getKey())) {
                 for (Posting p : entry.getValue()) {
                     System.out.println("p.getWtf():" + p.getWtf() + "termTFIDF.get(entry.getKey())" + termTFIDF.get(entry.getKey()));
-                    if (!docSimilitud.containsKey(p.getDocumentId()))
+                    if (!docSimilitud.containsKey((int) p.getDocumentId()))
                         docSimilitud.put((int) p.getDocumentId(), termTFIDF.get(entry.getKey()) * p.getWtf());
                     else
                         docSimilitud.put((int) p.getDocumentId(), docSimilitud.get(p.getDocumentId()) + termTFIDF.get(entry.getKey()) * p.getWtf());
@@ -198,9 +198,14 @@ public class Consulta {
         //ArrayList<Integer> resultado_docs = new ArrayList<Integer>();
         List<Integer> resultado_docs = new ArrayList<Integer>();
 
+        mensaje1 =
+                "     <h1>RESULTADOS</h1>\n";
+
         for (Map.Entry<Integer, Double> entry : sortByValues(docSimilitud).entrySet()) {
             resultado_docs.add(entry.getKey());
+            mensaje1 += "Documento: " + entry.getKey() + " \n";
         }
+        resultados = mensaje1;
 
     }
 
