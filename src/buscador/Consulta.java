@@ -179,22 +179,25 @@ public class Consulta {
 
     // Ordenar docSimilitud y guardarlos en resultados
     private void ordenar(){
+        //ArrayList<Integer> resultado_docs = new ArrayList<Integer>();
+        List<Integer> resultado_docs = new ArrayList<Integer>();
 
-        System.out.println(entriesSortedByValues(docSimilitud));
+        for (Map.Entry<Integer, Double> entry : sortByValues(docSimilitud).entrySet()) {
+            resultado_docs.add(entry.getKey());
+        }
 
     }
 
-    static <K,V extends Comparable<? super V>>
-    SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
-        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
-                new Comparator<Map.Entry<K,V>>() {
-                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
-                        int res = e2.getValue().compareTo(e1.getValue());
-                        return res != 0 ? res : 1;
-                    }
-                }
-        );
-        sortedEntries.addAll(map.entrySet());
-        return sortedEntries;
+    public static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map) {
+        Comparator<K> valueComparator =  new Comparator<K>() {
+            public int compare(K k1, K k2) {
+                int compare = map.get(k2).compareTo(map.get(k1));
+                if (compare == 0) return 1;
+                else return compare;
+            }
+        };
+        Map<K, V> sortedByValues = new TreeMap<K, V>(valueComparator);
+        sortedByValues.putAll(map);
+        return sortedByValues;
     }
 }
