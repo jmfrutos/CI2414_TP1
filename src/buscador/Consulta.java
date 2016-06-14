@@ -8,10 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.*;
 
 
 /**
@@ -27,9 +24,11 @@ public class Consulta {
 
     private Analyzer analyzer = new StandardAnalyzer();
     private AbstractMap<String,Integer> termMapping = new TreeMap<String, Integer>(); //termID - termNombre
+    private AbstractMap<Integer, Integer> termTF = new TreeMap<Integer, Integer>(); //termID - Frecuency en la consulta
+    private AbstractMap<Integer, Double> termIDF = new TreeMap<Integer, Double>(); //termID - IDF
     private AbstractMap<Integer, Double> termNorm = new TreeMap<Integer, Double>(); //termID - normalizacion de la consulta
+    private AbstractMap<Integer, Double> termTFIDF = new TreeMap<Integer, Double>(); //termID - TFIDF de la consulta
     private AbstractMap<Integer,Double> docSimilitud = new TreeMap<Integer, Double>(); // docID - conseno similitud (double)
-    public ArrayList consulta_terms = new ArrayList(); //tiene los ids de los terminos que estan en el diccionario (termMapping)
 
     public Consulta(){
         mensaje1 =
@@ -69,7 +68,8 @@ public class Consulta {
             while(tokenizer.hasMoreTokens()){
                 String term = tokenizer.nextToken();
                 if(termMapping.containsKey(term)){
-                    consulta_terms.add(termMapping.get(term)); // agregar los ids de los terminos guardados en termMapping
+                    if(!termTF.containsKey(term)){ termTF.put(termMapping.get(term), 1); }
+                    else termTF.put(termMapping.get(term), termTF.get(termMapping.get(term)) + 1);
                 }
             }
         }
@@ -116,6 +116,7 @@ public class Consulta {
     }
 
     // Leer archivo termMapping.txt y cargar termMapping
+    // y leer idf.txt
     private void readTermMapping(){
         try {
             File inputFile = new File("C:\\indice\\termMapping.txt");
@@ -134,13 +135,35 @@ public class Consulta {
             e.printStackTrace();
         }
         System.out.println(termMapping);
+
+        try {
+            File inputFile = new File("C:\\indice\\idf.txt");
+            FileReader fstream = new FileReader(inputFile);
+            BufferedReader in = new BufferedReader(fstream);
+
+            String line = in.readLine();
+
+            while (line != null) {
+                String term[] = line.split(" ",2);
+                termIDF.put(Integer.valueOf(term[0]),Double.valueOf(term[1]));
+                line = in.readLine();
+            }
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(termIDF);
     }
 
     //Retorna Normalización euclidiana del vector tƒ­idƒ de la consulta
 
     private double calcularNormEU(){
-
-        return 1.1;
+        Double sumatoria = 0.0;
+        for(Map.Entry<Integer, Integer> entry : termTF.entrySet()){  // para cada termino en la consulta
+            termTFIDF.put(entry.getKey(), (1 + Math.log10(entry.getValue())) * termIDF.get(entry.getKey()));
+            sumatoria += Math.exp(termTFIDF.get(entry.getKey()));
+        }
+        return Math.sqrt(sumatoria);
     }
 
 
@@ -159,5 +182,21 @@ public class Consulta {
     // Ordenar docSimilitud y guardarlos en resultados
     private void ordenar(){
 
+        System.out.println(entriesSortedByValues(docSimilitud));
+
+    }
+
+    static <K,V extends Comparable<? super V>>
+    SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+                new Comparator<Map.Entry<K,V>>() {
+                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+                        int res = e2.getValue().compareTo(e1.getValue());
+                        return res != 0 ? res : 1;
+                    }
+                }
+        );
+        sortedEntries.addAll(map.entrySet());
+        return sortedEntries;
     }
 }

@@ -374,10 +374,25 @@ public class BSBI extends IndexWriter {
     }
 
     public void calcularIDF(){
-        for(Map.Entry<Integer, Integer> entry : termDF.entrySet()){
-            termIDF.put(entry.getKey(), Math.log10(docCounter/entry.getValue()));
-            System.out.println("termIDF"+entry.getKey()+"-"+Math.log10(docCounter/entry.getValue()));
+        try {
+            File file = new File("C:\\indice\\idf.txt");
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file);
+
+            for(Map.Entry<Integer, Integer> entry : termDF.entrySet()){
+                Double valor =  Math.log10(docCounter/entry.getValue());
+                termIDF.put(entry.getKey(), valor);
+                writer.write(entry.getKey() + " " + valor + "\n");
+                //System.out.println("termIDF"+entry.getKey()+"-"+Math.log10(docCounter/entry.getValue()));
+            }
+
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
 
