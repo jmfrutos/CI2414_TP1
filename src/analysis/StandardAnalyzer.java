@@ -32,21 +32,24 @@ public class StandardAnalyzer extends Analyzer  {
         super.config = config;
     }
 
+
     public void analyze(Document doc){
 
-        // ----   REMOVE HTML ------
-        agente = new UserAgent();
-        try {
-            agente.open(new File(doc.getFileName()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ResponseException e) {
-            e.printStackTrace();
+        if(doc.getBody().equals("")){
+            agente = new UserAgent();
+            try {
+                agente.open(new File(doc.getFileName()));
+                doc.setBody(agente.doc.innerText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ResponseException e) {
+                e.printStackTrace();
+            }
         }
 
 
         if(config.COMPRESSION_CASE_FOLDING)
-            doc.setBody_normalized(agente.doc.innerText().toLowerCase());
+            doc.setBody_normalized(doc.getBody().toLowerCase());
 
 
         if( !doc.getBody_normalized().equals("")) {

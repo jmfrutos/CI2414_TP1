@@ -428,8 +428,22 @@ public class BSBI extends IndexWriter {
         }
     }
 
-    public void printTermMapping(){
+    public void writeTermMapping(){
+        try {
+            File file = new File("C:\\indice\\termMapping.txt");
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file);
 
+            for(Map.Entry<String, Integer> entry : termMapping.entrySet()){
+                writer.write(entry.getKey() + " " + entry.getValue() + "\n");
+            }
+
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -465,7 +479,7 @@ public class BSBI extends IndexWriter {
         System.out.println(docNorm);
         calcularLengthNormalization();
 
-        printTermMapping();
+        writeTermMapping();
 
         /*
         Iterator<Map.Entry<String,Integer>> iter = entriesSortedByValues(termMapping).iterator();

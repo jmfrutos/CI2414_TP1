@@ -4,6 +4,10 @@ import analysis.Analyzer;
 import analysis.StandardAnalyzer;
 import document.Document;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -56,6 +60,7 @@ public class Consulta {
 
         //Parsear y normalizar consulta
         Document doc = new Document();
+        doc.setBody(consulta);
         analyzer.analyze(doc);
 
         StringTokenizer tokenizer = new StringTokenizer(doc.getBody_normalized());
@@ -78,6 +83,10 @@ public class Consulta {
 
         // calcular Length Normalization de consulta_terms
         calcularLengthNormalization();
+
+        // calcula la similitud de cosenos entre lso documentos y la consulta
+        // guardar en docSimilitud
+        calcularSimilitud();
 
         // Ordenar documentos y crear string con resultados
         ordenar();
@@ -108,7 +117,23 @@ public class Consulta {
 
     // Leer archivo termMapping.txt y cargar termMapping
     private void readTermMapping(){
+        try {
+            File inputFile = new File("C:\\indice\\termMapping.txt");
+            FileReader fstream = new FileReader(inputFile);
+            BufferedReader in = new BufferedReader(fstream);
 
+            String line = in.readLine();
+
+            while (line != null) {
+                String term[] = line.split(" ",2);
+                termMapping.put(term[0],Integer.valueOf(term[1]));
+                line = in.readLine();
+            }
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(termMapping);
     }
 
     //Retorna Normalización euclidiana del vector tƒ­idƒ de la consulta
