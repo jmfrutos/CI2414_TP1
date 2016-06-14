@@ -8,10 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.*;
 
 
 /**
@@ -29,13 +26,18 @@ public class Consulta {
     private AbstractMap<String,Integer> termMapping = new TreeMap<String, Integer>(); //termID - termNombre
     private AbstractMap<Integer, Double> termNorm = new TreeMap<Integer, Double>(); //termID - normalizacion de la consulta
     private AbstractMap<Integer,Double> docSimilitud = new TreeMap<Integer, Double>(); // docID - conseno similitud (double)
+    private AbstractMap<Double,Integer> docSimilitudDSC = new TreeMap<Double,Integer>(new Comparator<Double>()
+    {
+        @Override
+        public int compare(Double o1, Double o2) {
+            return o2.compareTo(o1);
+        }
+    });
     public ArrayList consulta_terms = new ArrayList(); //tiene los ids de los terminos que estan en el diccionario (termMapping)
 
     public Consulta(){
         mensaje1 =
-                "     <h1>\n" +
-                        "       SIN RESULTADOS, LE RECOMENDAMOS MEJOR USAR ->\n" +
-                        "     </h1>\n" +
+                "     <h1>SIN RESULTADOS, LE RECOMENDAMOS MEJOR USAR -></h1>\n" +
                         "     <a href=\"http://www.google.com\">GOOGLE</a>\n";
 
         terminoBuscado = "\n";
@@ -159,5 +161,8 @@ public class Consulta {
     // Ordenar docSimilitud y guardarlos en resultados
     private void ordenar(){
 
+        for(Map.Entry<Integer, Double> datos : docSimilitud.entrySet()) {
+            docSimilitudDSC.put(datos.getValue(), datos.getKey());
+        }
     }
 }
