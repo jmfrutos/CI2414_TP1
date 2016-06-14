@@ -32,9 +32,7 @@ public class Consulta {
 
     public Consulta(){
         mensaje1 =
-                "     <h1>\n" +
-                        "       SIN RESULTADOS, LE RECOMENDAMOS MEJOR USAR ->\n" +
-                        "     </h1>\n" +
+                "     <h1>SIN RESULTADOS, LE RECOMENDAMOS MEJOR USAR -></h1>\n" +
                         "     <a href=\"http://www.google.com\">GOOGLE</a>\n";
 
         terminoBuscado = "\n";
