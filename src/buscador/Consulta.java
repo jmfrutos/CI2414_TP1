@@ -53,12 +53,10 @@ public class Consulta {
     }
     public String buscar(){
         resultados = cabecera + terminoBuscado + mensaje1 + pie;
-
         //Parsear y normalizar consulta
         Document doc = new Document();
         doc.setBody(consulta);
         analyzer.analyze(doc);
-
         StringTokenizer tokenizer = new StringTokenizer(doc.getBody_normalized());
         try {
             //Obtener interseccion terminos de consulta y diccionario
@@ -74,7 +72,7 @@ public class Consulta {
             System.out.println(e.getMessage());
         }
 
-
+        System.out.println("termTF"+termTF);
         // Normalización euclidiana del vector tƒ­idƒ de la consulta
         Double consultaNorm = calcularNormEU();
 
@@ -177,16 +175,19 @@ public class Consulta {
     // guardar en docSimilitud
     private void calcularSimilitud(){
         map = readFromDisk("C:\\indice\\norm.txt",2);
-        //System.out.println(map);
+        System.out.println(map);
         for(Map.Entry<Integer, ArrayList<Posting>> entry : map.entrySet()){
-            for(Posting p : entry.getValue()){
+            System.out.println("entry.getKey()" + entry.getKey());
+            if(termTFIDF.containsKey(entry.getKey())) {
+                for (Posting p : entry.getValue()) {
+                    System.out.println("p.getWtf():" + p.getWtf() + "termTFIDF.get(entry.getKey())" + termTFIDF.get(entry.getKey()));
+                    if (!docSimilitud.containsKey(p.getDocumentId()))
+                        docSimilitud.put((int) p.getDocumentId(), termTFIDF.get(entry.getKey()) * p.getWtf());
+                    else
+                        docSimilitud.put((int) p.getDocumentId(), docSimilitud.get(p.getDocumentId()) + termTFIDF.get(entry.getKey()) * p.getWtf());
 
-                if(!docSimilitud.containsKey(p.getDocumentId()))
-                    docSimilitud.put((int)p.getDocumentId(), termTFIDF.get(entry.getKey()) * p.getWtf());
-                else docSimilitud.put((int)p.getDocumentId(), docSimilitud.get(p.getDocumentId())+ termTFIDF.get(entry.getKey()) * p.getWtf());
-
+                }
             }
-
         }
         System.out.println("DOC SIMILITUD");
         System.out.println(docSimilitud);
