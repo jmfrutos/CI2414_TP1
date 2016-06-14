@@ -3,11 +3,9 @@ package buscador;
 import analysis.Analyzer;
 import analysis.StandardAnalyzer;
 import document.Document;
+import index.Posting;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 
@@ -28,6 +26,7 @@ public class Consulta {
     private AbstractMap<Integer, Double> termIDF = new TreeMap<Integer, Double>(); //termID - IDF
     private AbstractMap<Integer, Double> termNorm = new TreeMap<Integer, Double>(); //termID - normalizacion de la consulta
     private AbstractMap<Integer, Double> termTFIDF = new TreeMap<Integer, Double>(); //termID - TFIDF de la consulta
+    private AbstractMap<Integer, ArrayList<Posting>> map = new TreeMap<Integer, ArrayList<Posting>>();
     private AbstractMap<Integer,Double> docSimilitud = new TreeMap<Integer, Double>(); // docID - conseno similitud (double)
 
     public Consulta(){
@@ -77,10 +76,10 @@ public class Consulta {
 
 
         // Normalización euclidiana del vector tƒ­idƒ de la consulta
-        calcularNormEU();
+        Double consultaNorm = calcularNormEU();
 
         // calcular Length Normalization de consulta_terms
-        calcularLengthNormalization();
+        calcularLengthNormalization(consultaNorm);
 
         // calcula la similitud de cosenos entre lso documentos y la consulta
         // guardar en docSimilitud
@@ -167,14 +166,30 @@ public class Consulta {
 
     // calcular Length Normalization de consulta_terms
     // guardar en termNorm
-    private void calcularLengthNormalization(){
-
+    private void calcularLengthNormalization(Double consultaNorm){
+        for(Map.Entry<Integer, Double> entry :termTFIDF.entrySet()){
+            termTFIDF.put(entry.getKey(), termTFIDF.get(entry.getKey())/consultaNorm);
+            //entry.setValue(entry.getKey()/consultaNorm);
+        }
     }
 
     // calcula la similitud de cosenos entre lso documentos y la consulta
     // guardar en docSimilitud
     private void calcularSimilitud(){
+        map = readFromDisk("C:\\indice\\norm.txt",2);
+        //System.out.println(map);
+        for(Map.Entry<Integer, ArrayList<Posting>> entry : map.entrySet()){
+            for(Posting p : entry.getValue()){
 
+                if(!docSimilitud.containsKey(p.getDocumentId()))
+                    docSimilitud.put((int)p.getDocumentId(), termTFIDF.get(entry.getKey()) * p.getWtf());
+                else docSimilitud.put((int)p.getDocumentId(), docSimilitud.get(p.getDocumentId())+ termTFIDF.get(entry.getKey()) * p.getWtf());
+
+            }
+
+        }
+        System.out.println("DOC SIMILITUD");
+        System.out.println(docSimilitud);
     }
 
     // Ordenar docSimilitud y guardarlos en resultados
@@ -196,5 +211,65 @@ public class Consulta {
         );
         sortedEntries.addAll(map.entrySet());
         return sortedEntries;
+    }
+
+    //OPTION 1= read frecuency/ocurrency (integer)
+    //OPTION 2= read wtf (double)
+    public  AbstractMap<Integer, ArrayList<Posting>> readFromDisk(String path, int option) {
+        try {
+            TreeMap<Integer, ArrayList<Posting>> newMap = new TreeMap<Integer, ArrayList<Posting>>();
+
+            File inputFile = new File(path);
+
+            // System.out.println("opening " + inputFile.getAbsolutePath());
+            FileReader fstream = new FileReader(inputFile);
+            BufferedReader in = new BufferedReader(fstream);
+
+            String line = in.readLine();
+
+
+            String term = null;
+            while (line != null) {
+                StringTokenizer st = new StringTokenizer(line);
+                boolean firstToken = true;
+                Posting[] postingList = new Posting[st.countTokens()-1];
+                int i=0;
+                while (st.hasMoreTokens()) {
+                    if (firstToken==true) {
+                        firstToken = false;
+                        term = st.nextToken();
+                    }
+                    else {
+                        String str2[] = st.nextToken().split(":",2);
+                        if(option==1)
+                            postingList[i++] = Posting.fromString(term, str2[0], Integer.valueOf(str2[1]));
+                        else postingList[i++] = Posting.fromString(term, str2[0], Double.valueOf(str2[1]));
+                    }
+                }
+
+                newMap.put(Integer.valueOf(term), new ArrayList<Posting>(Arrays.asList((postingList))));
+                line = in.readLine();
+            }
+
+            in.close();
+            return newMap;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void clearFile(String filename){
+        try {
+            File file = new File(filename);
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file);
+            writer.write("");
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
